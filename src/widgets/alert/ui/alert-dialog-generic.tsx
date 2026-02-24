@@ -11,7 +11,7 @@ import {
 } from '@/shared/ui/alert-dialog'
 import type { ReactNode } from 'react'
 
-interface AlertDialogComponentProps {
+interface AlertDialogGenericProps {
   trigger: ReactNode
   title: string
   description: string | ReactNode
@@ -21,7 +21,7 @@ interface AlertDialogComponentProps {
   triggerClassName?: string
 }
 
-export function AlertDialogComponent({
+export function AlertDialogGeneric({
   trigger,
   title,
   description,
@@ -29,7 +29,7 @@ export function AlertDialogComponent({
   cancelText = 'Cancelar',
   onConfirm,
   triggerClassName,
-}: AlertDialogComponentProps) {
+}: AlertDialogGenericProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>

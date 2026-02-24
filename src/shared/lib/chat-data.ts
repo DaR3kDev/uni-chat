@@ -188,6 +188,27 @@ export const stories: Story[] = [
     avatarColor: 'bg-indigo-100 text-indigo-600',
     seen: true,
   },
+  {
+    id: 's6',
+    name: 'Diego',
+    avatar: 'D',
+    avatarColor: 'bg-indigo-100 text-indigo-600',
+    seen: true,
+  },
+  {
+    id: 's7',
+    name: 'Diego',
+    avatar: 'D',
+    avatarColor: 'bg-indigo-100 text-indigo-600',
+    seen: true,
+  },
+  {
+    id: 's8',
+    name: 'Diego',
+    avatar: 'D',
+    avatarColor: 'bg-indigo-100 text-indigo-600',
+    seen: true,
+  },
 ]
 
 export const chats: Chat[] = [

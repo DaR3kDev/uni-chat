@@ -4,6 +4,8 @@ import { ScrollArea } from '@/shared/ui/scroll-area'
 import { useDialogStore } from '@/widgets/dialog/store/dialogStore'
 import type { Contact } from '@/shared/lib/chat-data'
 import { ContactList } from './contact-list'
+import { Button } from '@/shared/ui/button'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip'
 
 interface ContactListDialogProps {
   contacts: Contact[]
@@ -58,12 +60,15 @@ export function ContactListDialog({
   }
 
   return (
-    <button
-      onClick={handleOpen}
-      className="flex size-8 items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary hover:text-secondary-foreground"
-      aria-label="Contactos"
-    >
-      <BookOpen className="size-4" />
-    </button>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button onClick={handleOpen} variant="ghost" size="sm">
+            <BookOpen className="size-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Contactos</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   )
 }

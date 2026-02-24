@@ -1,6 +1,6 @@
 import { MessageSquarePlus, Phone, Trash2 } from 'lucide-react'
 import type { Contact } from '@/shared/lib/chat-data'
-import { AlertDialogComponent } from '@/widgets/alert/ui/alert-dialog'
+import { AlertDialogGeneric } from '@/widgets/alert/ui/alert-dialog-generic'
 
 interface ContactItemProps {
   contact: Contact
@@ -42,7 +42,7 @@ export function ContactItem({ contact, onStartChat, onDeleteContact }: ContactIt
           <MessageSquarePlus className="size-4" />
         </button>
 
-        <AlertDialogComponent
+        <AlertDialogGeneric
           trigger={<Trash2 className="size-4" />}
           triggerClassName="flex size-8 items-center justify-center rounded-lg hover:bg-destructive/10 hover:text-destructive"
           title="Eliminar contacto"
@@ -55,4 +55,3 @@ export function ContactItem({ contact, onStartChat, onDeleteContact }: ContactIt
     </div>
   )
 }
-1
