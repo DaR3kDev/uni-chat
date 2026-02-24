@@ -53,6 +53,9 @@ export function ThemeProvider({
   const value = {
     theme,
     setTheme: (newTheme: Theme) => {
+      // ✅ evitar transición si no hay cambio
+      if (newTheme === theme) return
+
       const switchTheme = () => {
         localStorage.setItem(storageKey, newTheme)
         setThemeState(newTheme)
@@ -61,7 +64,9 @@ export function ThemeProvider({
       if (!document.startViewTransition) {
         switchTheme()
       } else {
-        document.startViewTransition(switchTheme)
+        document.startViewTransition(() => {
+          switchTheme()
+        })
       }
     },
   }

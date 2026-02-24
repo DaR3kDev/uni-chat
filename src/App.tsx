@@ -1,5 +1,10 @@
-import Layout from './app/layout'
+import { BrowserRouter } from 'react-router'
+import MainRoutes from './app/router'
 
 export function App() {
-  return <Layout />
+  return (
+    <BrowserRouter>
+      <MainRoutes />
+    </BrowserRouter>
+  )
 }

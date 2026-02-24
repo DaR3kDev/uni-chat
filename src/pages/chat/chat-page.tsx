@@ -1,15 +1,13 @@
 import { useState } from 'react'
 import { chats, initialContacts, type Chat, type Contact } from '@/shared/lib/chat-data'
-
-import { FormDialog } from '@/widgets/dialog/ui/form-dialog'
 import ChatSidebar from '@/widgets/sidebar/ui/chat-sidebar'
 import { ChatView } from '@/features/chat/components/chat-view'
+import { FormDialog } from '@/widgets/dialog/ui/form-dialog'
 
-export default function Layout() {
+export default function ChatPage() {
   const [chatList] = useState<Chat[]>(chats)
   const [contactList] = useState<Contact[]>(initialContacts)
   const [activeChatId, setActiveChatId] = useState<string | null>(null)
-
   const sidebarProps = {
     activeChatId,
     onSelectChat: setActiveChatId,
@@ -24,7 +22,7 @@ export default function Layout() {
   }
 
   return (
-    <main className="flex h-dvh w-full overflow-hidden bg-background">
+    <>
       {/* ================= MOBILE ================= */}
       <div className="flex w-full flex-col md:hidden">
         <div className="flex-1 overflow-hidden">
@@ -44,6 +42,6 @@ export default function Layout() {
       <section className="hidden md:flex">
         <FormDialog />
       </section>
-    </main>
+    </>
   )
 }
