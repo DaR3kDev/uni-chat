@@ -17,11 +17,10 @@ export function ChatPreviewItem({
   chat,
   active,
   onSelect,
-  onDeleteChat,
   onTogglePin,
   onToggleMute,
 }: ChatPreviewItemProps) {
-  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [, setDeleteOpen] = useState(false)
   const dropdownItems = [
     {
       label: chat.pinned ? 'Desfijar' : 'Fijar',
