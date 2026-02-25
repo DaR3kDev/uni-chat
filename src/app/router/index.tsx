@@ -7,12 +7,13 @@ import RegisterPage from '@/pages/authentication/register-page'
 export default function MainRoutes() {
   return (
     <Routes>
-      <Route path="/">
-        <Route index element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/chat" element={<ChatLayout />}>
-          <Route index element={<ChatPage />} />
-        </Route>
+      {/* AUTH */}
+      <Route path="/" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+
+      {/* CHAT */}
+      <Route path="/chat" element={<ChatLayout />}>
+        <Route index element={<ChatPage />} />
       </Route>
     </Routes>
   )
