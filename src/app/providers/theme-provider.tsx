@@ -53,7 +53,6 @@ export function ThemeProvider({
   const value = {
     theme,
     setTheme: (newTheme: Theme) => {
-      // ✅ evitar transición si no hay cambio
       if (newTheme === theme) return
 
       const switchTheme = () => {

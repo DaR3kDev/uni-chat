@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, CheckCheck, ImageIcon, Mic, Plus, SendHorizontal, Smile } from 'lucide-react'
+import { CheckCheck, Mic, Plus } from 'lucide-react'
 import type { Message, Reaction } from '@/shared/lib/chat-data'
 
 const QUICK_REACTIONS = [
