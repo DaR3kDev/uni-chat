@@ -1,6 +1,7 @@
 import { Button } from '@/shared/ui/button'
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from '@/shared/ui/field'
 import { Input } from '@/shared/ui/input'
+import { Link } from 'react-router'
 
 export function LoginForm() {
   return (
@@ -34,10 +35,10 @@ export function LoginForm() {
         {/* Register */}
         <Field>
           <FieldDescription className="text-center">
-            ¿No tienes una cuenta?{' '}
-            <a href="/register" className="underline underline-offset-4">
+            ¿No tienes una cuenta?
+            <Link to="/register" className="underline underline-offset-4">
               Regístrate
-            </a>
+            </Link>
           </FieldDescription>
         </Field>
       </FieldGroup>

@@ -10,6 +10,7 @@ import {
   ComboboxItem,
   ComboboxList,
 } from '@/shared/ui/combobox'
+import { Link } from 'react-router'
 
 const COUNTRIES = [
   { value: '+57', label: '🇨🇴 Colombia (+57)' },
@@ -122,10 +123,10 @@ export function RegisterForm() {
 
         <Field>
           <FieldDescription className="text-center">
-            ¿Ya tienes una cuenta?{' '}
-            <a href="/" className="underline underline-offset-4">
+            ¿Ya tienes una cuenta?
+            <Link to="/" className="underline underline-offset-4">
               Inicia sesión
-            </a>
+            </Link>
           </FieldDescription>
         </Field>
       </FieldGroup>
