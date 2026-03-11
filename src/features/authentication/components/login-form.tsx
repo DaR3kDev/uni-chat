@@ -1,7 +1,7 @@
 import { Button } from '@/shared/ui/button'
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from '@/shared/ui/field'
 import { Input } from '@/shared/ui/input'
-import { Link } from 'react-router'
+import { Link } from '@tanstack/react-router'
 
 export function LoginForm() {
   return (

@@ -1,9 +1,5 @@
-import { Outlet } from 'react-router'
+import type { PropsWithChildren } from 'react'
 
-export default function ChatLayout() {
-  return (
-    <main className="flex h-dvh w-full overflow-hidden bg-background">
-      <Outlet />
-    </main>
-  )
+export default function ChatLayout({ children }: PropsWithChildren) {
+  return <main className="flex h-dvh w-full overflow-hidden bg-background">{children}</main>
 }

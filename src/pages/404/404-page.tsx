@@ -1,5 +1,5 @@
 import { MessageCircleOff, ArrowLeft, Home } from 'lucide-react'
-import { Link } from 'react-router'
+import { Link } from '@tanstack/react-router'
 
 export default function NotFoundPage() {
   return (
