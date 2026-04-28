@@ -1,16 +1,15 @@
 import { LoginForm } from '@/features/authentication/components/login-form'
+import { Link } from 'lucide-react'
 
 export default function LoginPage() {
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
-          <a href="#" className="flex items-center gap-2 font-medium">
-            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-              <span>U</span>
-            </div>
+          <Link to="/" className="flex items-center gap-2 font-medium">
+            <img src="./img/logo.webp" alt="Logo" className="h-8 w-8" />
             Uni Chat
-          </a>
+          </Link>
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
@@ -30,7 +29,7 @@ export default function LoginPage() {
 
         <div className="relative flex flex-col items-center gap-6">
           <img
-            src="./img/logo.png"
+            src="./img/logo.webp"
             alt="Logo"
             className="h-40 w-40 object-contain
                  dark:mix-blend-screen

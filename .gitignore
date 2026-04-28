@@ -25,3 +25,7 @@ dist-ssr
 
 .vercel
 .env*.local
+
+# tanstack router
+.routeTree.gen.ts
+.tanstack

@@ -31,7 +31,7 @@ export default function ChatSidebar({ contacts, onStartChat, onDeleteContact }: 
       <div className="flex items-center justify-between px-3 sm:px-4 pt-3 pb-2">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <img
-            src="./img/logo.png"
+            src="./img/logo.webp"
             alt="UniChat Logo"
             className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 object-contain"
           />
