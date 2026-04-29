@@ -17,8 +17,8 @@ export interface ChatSidebarProps {
 }
 
 export interface Chat {
-  id: string
-  name: string
+  _id: string
+  nombre: string
   avatar: string
   avatarColor: string
   lastMessage: string
@@ -33,7 +33,7 @@ export interface Chat {
 }
 
 export interface Message {
-  id: string
+  _id: string
   text: string
   time: string
   fromMe: boolean
@@ -41,22 +41,6 @@ export interface Message {
   isVoice?: boolean
   voiceDuration?: string
   replyTo?: string
-}
-
-export interface Chat {
-  id: string
-  name: string
-  avatar: string
-  avatarColor: string
-  lastMessage: string
-  time: string
-  unread: number
-  online: boolean
-  typing?: boolean
-  pinned?: boolean
-  muted?: boolean
-  messages: Message[]
-  category: 'all' | 'personal' | 'work' | 'group'
 }
 
 export interface Story {
@@ -69,9 +53,9 @@ export interface Story {
 }
 
 export interface Contact {
-  id: string
-  name: string
-  phone: string
+  _id: string
+  nombre: string
+  telefono_e164: string
   avatar: string
   avatarColor: string
   online: boolean

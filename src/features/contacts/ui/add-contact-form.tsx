@@ -19,7 +19,13 @@ type Props = {
 export function AddContactForm({ userId, onSuccess }: Props) {
   const { mutate, isPending } = useCreateContact({ userId })
 
-  const { register, handleSubmit, control, reset } = useForm<ContactSchema>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm<ContactSchema>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
       nombre: '',
@@ -28,7 +34,17 @@ export function AddContactForm({ userId, onSuccess }: Props) {
   })
 
   const onSubmit = (data: ContactSchema) => {
-    mutate(data, {
+    const fullNumber = data.numero
+
+    const match = fullNumber.match(/^(\+\d{1,4})(\d+)$/)
+
+    const payload = {
+      nombre: data.nombre,
+      codigo_pais: match?.[1] || '',
+      numero: match?.[2] || '',
+    }
+
+    mutate(payload, {
       onSuccess: () => {
         reset()
         onSuccess?.()
@@ -36,15 +52,21 @@ export function AddContactForm({ userId, onSuccess }: Props) {
     })
   }
 
+  const onInvalid = (errors: any) => {
+    console.log('FORM INVALID:', errors)
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 pt-2">
-      {/* Nombre */}
+    <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="flex flex-col gap-5 pt-2">
+      {/* NOMBRE */}
       <div className="flex flex-col gap-1">
         <Label>Nombre</Label>
         <Input {...register('nombre')} placeholder="Ej: Juan Pérez" />
+
+        {errors.nombre && <span className="text-red-500 text-sm">{errors.nombre.message}</span>}
       </div>
 
-      {/* Teléfono */}
+      {/* TELÉFONO */}
       <div className="flex flex-col gap-1">
         <Label>Número</Label>
 
@@ -55,15 +77,17 @@ export function AddContactForm({ userId, onSuccess }: Props) {
             <PhoneInput
               international
               defaultCountry="CO"
-              value={field.value}
-              onChange={field.onChange}
+              value={field.value || ''}
+              onChange={value => field.onChange(value ?? '')}
               className="phone-input"
             />
           )}
         />
+
+        {errors.numero && <span className="text-red-500 text-sm">{errors.numero.message}</span>}
       </div>
 
-      {/* Submit */}
+      {/* SUBMIT */}
       <div className="flex justify-end">
         <Button type="submit" disabled={isPending}>
           {isPending ? 'Guardando...' : 'Guardar'}

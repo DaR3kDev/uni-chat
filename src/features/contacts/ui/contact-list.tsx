@@ -1,4 +1,4 @@
-import type { Contact } from '@/shared/lib/chat-data'
+import type { Contact } from '../hooks/use-contacts'
 import { ContactItem } from './contact-item'
 
 interface ContactListProps {
@@ -20,7 +20,7 @@ export function ContactList({ contacts, onStartChat, onDeleteContact }: ContactL
     <div className="flex flex-col gap-1 pb-4">
       {contacts.map(contact => (
         <ContactItem
-          key={contact.id}
+          key={contact._id}
           contact={contact}
           onStartChat={onStartChat}
           onDeleteContact={onDeleteContact}

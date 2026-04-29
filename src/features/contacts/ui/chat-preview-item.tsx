@@ -25,12 +25,12 @@ export function ChatPreviewItem({
     {
       label: chat.pinned ? 'Desfijar' : 'Fijar',
       icon: chat.pinned ? <PinOff className="mr-2 size-4" /> : <Pin className="mr-2 size-4" />,
-      onClick: () => onTogglePin(chat.id),
+      onClick: () => onTogglePin(chat._id),
     },
     {
       label: chat.muted ? 'Activar sonido' : 'Silenciar',
       icon: chat.muted ? <BellRing className="mr-2 size-4" /> : <BellOff className="mr-2 size-4" />,
-      onClick: () => onToggleMute(chat.id),
+      onClick: () => onToggleMute(chat._id),
     },
     {
       label: 'Eliminar chat',
@@ -45,10 +45,10 @@ export function ChatPreviewItem({
       className={`group relative flex w-full items-center gap-3 px-4 py-2.5 text-left cursor-pointer transition-colors ${
         active ? 'bg-accent/80' : 'hover:bg-secondary/60'
       }`}
-      onClick={() => onSelect(chat.id)}
+      onClick={() => onSelect(chat._id)}
       role="button"
       tabIndex={0}
-      onKeyDown={e => e.key === 'Enter' && onSelect(chat.id)}
+      onKeyDown={e => e.key === 'Enter' && onSelect(chat._id)}
     >
       {/* Avatar */}
       <div className="relative shrink-0">

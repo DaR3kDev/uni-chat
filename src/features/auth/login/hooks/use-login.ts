@@ -3,8 +3,8 @@ import { useNavigate } from '@tanstack/react-router'
 import { AxiosError } from 'axios'
 import { toast } from 'sonner'
 
-import { login } from '../api/login.api'
-import { authStorage } from '../model/auth-storage'
+import { login } from '../../../../entities/user/api/login.api'
+import { authStorage } from '../../../../entities/user/model/storage/auth-storage'
 import type { LoginPayload, AuthTokenResponse, ApiError } from '../types/login.types'
 
 export function useLogin() {

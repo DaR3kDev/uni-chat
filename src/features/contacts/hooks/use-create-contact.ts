@@ -1,8 +1,9 @@
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-import { createContact } from '../api/contacts.api'
-import type { CreateContactPayload } from '../types/contacts.types'
+import { createContact } from '../../../entities/contact/api/contacts.api'
+import type { ApiError, CreateContactPayload } from '../types/contacts.types'
+import type { AxiosError } from 'axios'
 
 type Params = {
   userId: string
@@ -16,8 +17,10 @@ export function useCreateContact({ userId }: Params) {
       toast.success('Contacto agregado')
     },
 
-    onError: () => {
-      toast.error('Error al crear contacto')
+    onError: (error: AxiosError<ApiError>) => {
+      const message = error.response?.data?.detail || 'Error al crear contacto'
+
+      toast.error(message)
     },
   })
 }

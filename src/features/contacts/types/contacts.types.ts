@@ -10,3 +10,7 @@ export type ContactResponse = {
   codigo_pais: string
   numero: string
 }
+
+export type ApiError = {
+  detail?: string
+}

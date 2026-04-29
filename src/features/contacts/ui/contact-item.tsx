@@ -1,6 +1,6 @@
 import { MessageSquarePlus, Phone, Trash2 } from 'lucide-react'
-import type { Contact } from '@/shared/lib/chat-data'
 import { AlertDialogGeneric } from '@/widgets/alert/ui/alert-dialog-generic'
+import type { Contact } from '../hooks/use-contacts'
 
 interface ContactItemProps {
   contact: Contact
@@ -25,10 +25,10 @@ export function ContactItem({ contact, onStartChat, onDeleteContact }: ContactIt
 
       {/* Info */}
       <div className="flex flex-1 flex-col min-w-0">
-        <span className="truncate text-sm font-medium text-foreground">{contact.name}</span>
+        <span className="truncate text-sm font-medium text-foreground">{contact.nombre}</span>
         <div className="flex items-center gap-1 mt-0.5 text-xs text-muted-foreground">
           <Phone className="size-3" />
-          <span className="truncate">{contact.phone}</span>
+          <span className="truncate">{contact.telefono_e164}</span>
         </div>
       </div>
 
@@ -37,7 +37,7 @@ export function ContactItem({ contact, onStartChat, onDeleteContact }: ContactIt
         <button
           onClick={() => onStartChat(contact)}
           className="flex size-8 items-center justify-center rounded-lg hover:bg-primary hover:text-primary-foreground"
-          aria-label={`Iniciar chat con ${contact.name}`}
+          aria-label={`Iniciar chat con ${contact.nombre}`}
         >
           <MessageSquarePlus className="size-4" />
         </button>
@@ -46,10 +46,10 @@ export function ContactItem({ contact, onStartChat, onDeleteContact }: ContactIt
           trigger={<Trash2 className="size-4" />}
           triggerClassName="flex size-8 items-center justify-center rounded-lg hover:bg-destructive/10 hover:text-destructive"
           title="Eliminar contacto"
-          description={`Se eliminará a ${contact.name} de tus contactos y su conversación asociada. Esta acción no se puede deshacer.`}
+          description={`Se eliminará a ${contact.nombre} de tus contactos y su conversación asociada. Esta acción no se puede deshacer.`}
           confirmText="Eliminar"
           cancelText="Cancelar"
-          onConfirm={() => onDeleteContact(contact.id)}
+          onConfirm={() => onDeleteContact(contact._id)}
         />
       </div>
     </div>

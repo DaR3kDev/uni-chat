@@ -1,6 +1,4 @@
-import type { Chat, Message } from '@/shared/lib/chat-data'
 import { ScrollArea } from '@/shared/ui/scroll-area'
-import { DropdownGeneric } from '@/widgets/dropdwn/ui/dropdwn-generic'
 import {
   ArrowLeft,
   BellRing,
@@ -14,32 +12,60 @@ import {
   Trash2,
   Users,
 } from 'lucide-react'
+
 import { MessageBubble } from './messages-buble'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useAuthStore } from '@/entities/user/model/store/auth.store'
+import { useConversation } from '../hooks/use-conversation'
+import { useSendMessage } from '../hooks/use-send-message'
+import { DropdownGeneric } from '@/widgets/dropdwn/ui/dropdwn-generic'
+import type { Chat } from '@/widgets/sidebar/model/sidebar.types'
 
 interface ChatViewProps {
-  chats: Chat[]
+  chat: Chat | null
 }
 
-export function ChatView({ chats }: ChatViewProps) {
-  const [messages] = useState<Message[]>(chats[0]?.messages || [])
+export function ChatView({ chat }: ChatViewProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
+  const [text, setText] = useState('')
+
+  const userId = useAuthStore(state => state.user?.id)
+  const chatId = chat?._id
+
+  const { data: messages = [] } = useConversation(userId, chatId)
+  const { mutate } = useSendMessage()
+  console.log(messages)
+  const handleSend = () => {
+    if (!text.trim() || !userId || !chatId) return
+
+    mutate({
+      remitente_id: userId,
+      destinatario_id: chatId,
+      contenido: text.trim(),
+    })
+
+    setText('')
+  }
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
 
   const menuItems = [
     {
       label: 'Desfijar',
       icon: <PinOff className="size-4" />,
-      onClick: () => console.log('Toggle pin'),
+      onClick: () => {},
     },
     {
       label: 'Activar sonido',
       icon: <BellRing className="size-4" />,
-      onClick: () => console.log('Toggle mute'),
+      onClick: () => {},
     },
     {
       label: 'Eliminar chat',
       icon: <Trash2 className="size-4" />,
-      onClick: () => console.log('Delete chat'),
+      onClick: () => {},
       destructive: true,
     },
   ]
@@ -47,116 +73,69 @@ export function ChatView({ chats }: ChatViewProps) {
   return (
     <div className="flex h-full w-full overflow-hidden">
       <div className="flex flex-1 flex-col bg-background">
-        {/* ================= HEADER ================= */}
-        <header className="flex items-center gap-3 border-b border-border bg-card px-4 py-3">
-          {/* Back mobile */}
-          <button
-            className="flex size-8 items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary md:hidden"
-            aria-label="Volver"
-          >
+        {/* HEADER */}
+        <header className="flex items-center gap-3 border-b px-4 py-3">
+          <button className="flex size-8 items-center justify-center">
             <ArrowLeft className="size-5" />
           </button>
 
-          {/* Avatar */}
-          <div className="relative">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-secondary">
-              <Users className="size-4" />
-            </div>
-            <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-card bg-emerald-500" />
+          <div className="flex size-9 items-center justify-center rounded-xl bg-secondary">
+            <Users className="size-4" />
           </div>
 
-          {/* Chat info */}
-          <div className="flex-1 min-w-0">
-            <h2 className="truncate text-sm font-semibold">Grupo de estudio</h2>
+          <h2 className="flex-1 truncate text-sm font-semibold">{chat?.nombre || 'Chat'}</h2>
 
-            <div className="flex items-center gap-1 text-[11px]">
-              <span className="font-medium text-primary">escribiendo</span>
-              <span className="flex gap-0.5">
-                <span className="size-1 animate-bounce rounded-full bg-primary" />
-                <span className="size-1 animate-bounce rounded-full bg-primary [animation-delay:150ms]" />
-                <span className="size-1 animate-bounce rounded-full bg-primary [animation-delay:300ms]" />
-              </span>
-            </div>
-          </div>
+          <button className="size-8">
+            <Info className="size-4" />
+          </button>
 
-          {/* Actions */}
-          <div className="flex items-center gap-1">
-            <button
-              className="flex size-8 items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary"
-              aria-label="Info"
-            >
-              <Info className="size-4" />
-            </button>
-
-            <DropdownGeneric
-              align="end"
-              contentClassName="w-44"
-              trigger={
-                <div className="flex size-8 items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary">
-                  <MoreHorizontal className="size-4" />
-                </div>
-              }
-              items={menuItems}
-            />
-          </div>
+          <DropdownGeneric
+            align="end"
+            contentClassName="w-44"
+            trigger={
+              <div className="size-8 flex items-center justify-center">
+                <MoreHorizontal className="size-4" />
+              </div>
+            }
+            items={menuItems}
+          />
         </header>
 
-        {/* ================= MESSAGES ================= */}
+        {/* MESSAGES */}
         <ScrollArea className="flex-1">
           <div className="flex flex-col gap-3 px-4 py-4">
-            {/* Date */}
             <div className="flex justify-center">
-              <span className="rounded-lg bg-secondary px-3 py-1 text-[10px] font-medium">Hoy</span>
+              <span className="rounded-lg bg-secondary px-3 py-1 text-[10px]">Hoy</span>
             </div>
 
-            {messages.map(message => (
-              <MessageBubble key={message.id} message={message} />
+            {messages.map(msg => (
+              <MessageBubble key={msg._id} message={msg} />
             ))}
 
             <div ref={bottomRef} />
           </div>
         </ScrollArea>
 
-        {/* ================= INPUT ================= */}
-        <div className="border-t border-border bg-card px-4 py-3">
+        {/* INPUT */}
+        <div className="border-t px-4 py-3">
           <div className="flex items-center gap-2">
-            {/* Image */}
-            <button
-              className="hidden size-9 items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary sm:flex"
-              aria-label="Agregar imagen"
-            >
+            <button className="size-9">
               <ImageIcon className="size-4" />
             </button>
 
-            {/* Input */}
-            <div className="flex flex-1 items-center gap-2 rounded-xl border border-border bg-secondary/50 px-3 py-2 focus-within:border-primary">
-              <input
-                type="text"
-                placeholder="Escribe un mensaje..."
-                className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-              />
+            <input
+              value={text}
+              onChange={e => setText(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSend()}
+              placeholder="Escribe un mensaje..."
+              className="flex-1 rounded-xl border px-3 py-2 text-sm"
+            />
 
-              <button
-                className="flex size-7 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground"
-                aria-label="Emoji"
-              >
-                <Smile className="size-4" />
-              </button>
-            </div>
-
-            {/* Send */}
-            <button
-              className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground hover:opacity-90 active:scale-95"
-              aria-label="Enviar"
-            >
+            <button onClick={handleSend} className="size-10 bg-primary text-white">
               <SendHorizontal className="size-4" />
             </button>
 
-            {/* Audio */}
-            <button
-              className="flex size-10 items-center justify-center rounded-xl bg-secondary hover:bg-accent active:scale-95"
-              aria-label="Audio"
-            >
+            <button className="size-10">
               <Mic className="size-4" />
             </button>
           </div>

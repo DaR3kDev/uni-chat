@@ -1,13 +1,37 @@
 import { useState } from 'react'
-import { chats, initialContacts, type Chat, type Contact } from '@/shared/lib/chat-data'
 import ChatSidebar from '@/widgets/sidebar/ui/chat-sidebar'
 import { ChatView } from '@/features/chat/ui/chat-view'
 import { FormDialog } from '@/widgets/dialog/ui/form-dialog'
+import type { Chat } from '@/widgets/sidebar/model/sidebar.types'
+import type { Contact } from '@/widgets/sidebar/model/sidebar.types'
 
 export default function ChatPage() {
-  const [chatList] = useState<Chat[]>(chats)
-  const [contactList] = useState<Contact[]>(initialContacts)
+  const [chatList] = useState<Chat[]>([])
+  const [contactList] = useState<Contact[]>([])
+
   const [activeChatId, setActiveChatId] = useState<string | null>(null)
+  const [activeChat, setActiveChat] = useState<Chat | null>(null)
+
+  const handleStartChat = (contact: Contact) => {
+    const chat: Chat = {
+      _id: contact._id,
+      nombre: contact.nombre,
+      avatar: contact.avatar,
+      avatarColor: contact.avatarColor,
+      pinned: false,
+      muted: false,
+      online: contact.online,
+      lastMessage: '',
+      time: '',
+      unread: 0,
+      messages: [],
+      category: 'personal',
+    }
+
+    setActiveChat(chat)
+    setActiveChatId(contact._id)
+  }
+
   const sidebarProps = {
     activeChatId,
     onSelectChat: setActiveChatId,
@@ -17,26 +41,22 @@ export default function ChatPage() {
     onToggleMute: () => {},
     chats: chatList,
     contacts: contactList,
-    onStartChat: () => {},
+    onStartChat: handleStartChat,
     onDeleteContact: () => {},
   }
 
   return (
     <>
-      {/* ================= MOBILE ================= */}
       <div className="flex w-full flex-col md:hidden">
-        <div className="flex-1 overflow-hidden">
-          <ChatSidebar {...sidebarProps} />
-        </div>
+        <ChatSidebar {...sidebarProps} />
       </div>
 
-      {/* ================= DESKTOP SIDEBAR ================= */}
       <aside className="hidden md:flex w-[320px] lg:w-[380px] border-r border-border">
         <ChatSidebar {...sidebarProps} />
       </aside>
 
       <section className="flex flex-1 min-w-0 flex-col">
-        <ChatView chats={chatList} />
+        <ChatView chat={activeChat} />
       </section>
 
       <section className="hidden md:flex">

@@ -4,11 +4,17 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shar
 
 import { useDialogStore } from '@/widgets/dialog/store/dialogStore'
 import { AddContactForm } from './add-contact-form'
+import { useAuthStore } from '@/entities/user/model/store/auth.store'
 
 export function AddContactDialog() {
   const { openDialog, closeDialog } = useDialogStore()
+  const userId = useAuthStore(state => state.user?.id)
 
-  const handleOpen = () => openDialog('Nuevo contacto', <AddContactForm onSuccess={closeDialog} />)
+  const handleOpen = () => {
+    if (!userId) return
+
+    openDialog('Nuevo contacto', <AddContactForm userId={userId} onSuccess={closeDialog} />)
+  }
 
   return (
     <TooltipProvider>

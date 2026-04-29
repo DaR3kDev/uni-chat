@@ -2,10 +2,10 @@ import { useState, useMemo } from 'react'
 import { BookOpen, Search } from 'lucide-react'
 import { ScrollArea } from '@/shared/ui/scroll-area'
 import { useDialogStore } from '@/widgets/dialog/store/dialogStore'
-import type { Contact } from '@/shared/lib/chat-data'
 import { ContactList } from './contact-list'
 import { Button } from '@/shared/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip'
+import type { Contact } from '../hooks/use-contacts'
 
 interface ContactListDialogProps {
   contacts: Contact[]
@@ -22,7 +22,7 @@ export function ContactListDialog({
   const [search, setSearch] = useState('')
 
   const filteredContacts = useMemo(
-    () => contacts.filter(c => c.name.toLowerCase().includes(search.toLowerCase())),
+    () => contacts.filter(c => c.nombre.toLowerCase().includes(search.toLowerCase())),
     [contacts, search],
   )
 
