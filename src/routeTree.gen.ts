@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './app/routes/__root'
 import { Route as ChatRouteRouteImport } from './app/routes/chat/route'
+import { Route as authRouteRouteImport } from './app/routes/(auth)/route'
 import { Route as IndexRouteImport } from './app/routes/index'
 import { Route as ChatIndexRouteImport } from './app/routes/chat/index'
 import { Route as authRegisterIndexRouteImport } from './app/routes/(auth)/register/index'
@@ -18,6 +19,10 @@ import { Route as authLoginIndexRouteImport } from './app/routes/(auth)/login/in
 const ChatRouteRoute = ChatRouteRouteImport.update({
   id: '/chat',
   path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authRouteRoute = authRouteRouteImport.update({
+  id: '/(auth)',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -31,14 +36,14 @@ const ChatIndexRoute = ChatIndexRouteImport.update({
   getParentRoute: () => ChatRouteRoute,
 } as any)
 const authRegisterIndexRoute = authRegisterIndexRouteImport.update({
-  id: '/(auth)/register/',
+  id: '/register/',
   path: '/register/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => authRouteRoute,
 } as any)
 const authLoginIndexRoute = authLoginIndexRouteImport.update({
-  id: '/(auth)/login/',
+  id: '/login/',
   path: '/login/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => authRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -57,6 +62,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/(auth)': typeof authRouteRouteWithChildren
   '/chat': typeof ChatRouteRouteWithChildren
   '/chat/': typeof ChatIndexRoute
   '/(auth)/login/': typeof authLoginIndexRoute
@@ -70,6 +76,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/(auth)'
     | '/chat'
     | '/chat/'
     | '/(auth)/login/'
@@ -78,9 +85,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  authRouteRoute: typeof authRouteRouteWithChildren
   ChatRouteRoute: typeof ChatRouteRouteWithChildren
-  authLoginIndexRoute: typeof authLoginIndexRoute
-  authRegisterIndexRoute: typeof authRegisterIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -90,6 +96,13 @@ declare module '@tanstack/react-router' {
       path: '/chat'
       fullPath: '/chat'
       preLoaderRoute: typeof ChatRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)': {
+      id: '/(auth)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof authRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -111,17 +124,31 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register/'
       preLoaderRoute: typeof authRegisterIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof authRouteRoute
     }
     '/(auth)/login/': {
       id: '/(auth)/login/'
       path: '/login'
       fullPath: '/login/'
       preLoaderRoute: typeof authLoginIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof authRouteRoute
     }
   }
 }
+
+interface authRouteRouteChildren {
+  authLoginIndexRoute: typeof authLoginIndexRoute
+  authRegisterIndexRoute: typeof authRegisterIndexRoute
+}
+
+const authRouteRouteChildren: authRouteRouteChildren = {
+  authLoginIndexRoute: authLoginIndexRoute,
+  authRegisterIndexRoute: authRegisterIndexRoute,
+}
+
+const authRouteRouteWithChildren = authRouteRoute._addFileChildren(
+  authRouteRouteChildren,
+)
 
 interface ChatRouteRouteChildren {
   ChatIndexRoute: typeof ChatIndexRoute
@@ -137,9 +164,8 @@ const ChatRouteRouteWithChildren = ChatRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  authRouteRoute: authRouteRouteWithChildren,
   ChatRouteRoute: ChatRouteRouteWithChildren,
-  authLoginIndexRoute: authLoginIndexRoute,
-  authRegisterIndexRoute: authRegisterIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

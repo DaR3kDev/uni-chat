@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { chats, initialContacts, type Chat, type Contact } from '@/shared/lib/chat-data'
 import ChatSidebar from '@/widgets/sidebar/ui/chat-sidebar'
-import { ChatView } from '@/features/chat/components/chat-view'
+import { ChatView } from '@/features/chat/ui/chat-view'
 import { FormDialog } from '@/widgets/dialog/ui/form-dialog'
 
 export default function ChatPage() {
