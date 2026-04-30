@@ -1,4 +1,4 @@
-const TOKEN_KEY = 'accessToken'
+const TOKEN_KEY = 'token'
 
 export const authStorage = {
   setToken(token: string) {

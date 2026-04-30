@@ -11,13 +11,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { contactSchema, type ContactSchema } from '../schemas/contact.schema'
 import { useCreateContact } from '../hooks/use-create-contact'
 
-type Props = {
-  userId: string
+type AddContactFormProps = {
   onSuccess?: () => void
 }
 
-export function AddContactForm({ userId, onSuccess }: Props) {
-  const { mutate, isPending } = useCreateContact({ userId })
+export function AddContactForm({ onSuccess }: AddContactFormProps) {
+  const { mutate, isPending } = useCreateContact()
 
   const {
     register,
@@ -28,23 +27,13 @@ export function AddContactForm({ userId, onSuccess }: Props) {
   } = useForm<ContactSchema>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
-      nombre: '',
-      numero: '',
+      alias: '',
+      phone: '',
     },
   })
 
   const onSubmit = (data: ContactSchema) => {
-    const fullNumber = data.numero
-
-    const match = fullNumber.match(/^(\+\d{1,4})(\d+)$/)
-
-    const payload = {
-      nombre: data.nombre,
-      codigo_pais: match?.[1] || '',
-      numero: match?.[2] || '',
-    }
-
-    mutate(payload, {
+    mutate(data, {
       onSuccess: () => {
         reset()
         onSuccess?.()
@@ -52,39 +41,35 @@ export function AddContactForm({ userId, onSuccess }: Props) {
     })
   }
 
-  const onInvalid = (errors: any) => {
-    console.log('FORM INVALID:', errors)
-  }
-
   return (
-    <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="flex flex-col gap-5 pt-2">
-      {/* NOMBRE */}
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 pt-2">
+      {/* ALIAS */}
       <div className="flex flex-col gap-1">
         <Label>Nombre</Label>
-        <Input {...register('nombre')} placeholder="Ej: Juan Pérez" />
+        <Input {...register('alias')} placeholder="Ej: Juan Pérez" />
 
-        {errors.nombre && <span className="text-red-500 text-sm">{errors.nombre.message}</span>}
+        {errors.alias && <span className="text-red-500 text-sm">{errors.alias.message}</span>}
       </div>
 
-      {/* TELÉFONO */}
+      {/* PHONE */}
       <div className="flex flex-col gap-1">
         <Label>Número</Label>
 
         <Controller
-          name="numero"
+          name="phone"
           control={control}
           render={({ field }) => (
             <PhoneInput
               international
               defaultCountry="CO"
-              value={field.value || ''}
-              onChange={value => field.onChange(value ?? '')}
+              value={field.value}
+              onChange={field.onChange}
               className="phone-input"
             />
           )}
         />
 
-        {errors.numero && <span className="text-red-500 text-sm">{errors.numero.message}</span>}
+        {errors.phone && <span className="text-red-500 text-sm">{errors.phone.message}</span>}
       </div>
 
       {/* SUBMIT */}

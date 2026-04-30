@@ -1,16 +1,17 @@
 import { Search } from 'lucide-react'
-import { AddContactDialog } from '@/features/contacts/ui/add-contact-dialog'
-import { ContactListDialog } from '@/features/contacts/ui/contact-list-dialog'
+import { AddContactDialog } from '@/features/contacts/add-contact/ui/add-contact-dialog'
 import { stories } from '@/shared/lib/chat-data'
 import { ScrollArea } from '@/shared/ui/scroll-area'
-import { ChatPreviewItem } from '@/features/contacts/ui/chat-preview-item'
+import { ChatPreviewItem } from '@/features/contacts/list-contacts/ui/chat-preview-item'
 import { StoriesRow } from '@/features/stories/components/stories-row'
 import { FiltersComponents } from '@/features/filters/components/filters-components'
 import { InfoUserDialog } from '@/features/settings/components/info-user-panel'
 import { useAuthStore } from '@/entities/auth/model/store/auth.store'
-import { useContacts, type Contact } from '@/features/contacts/hooks/use-contacts'
+import { useContacts } from '@/features/contacts/list-contacts/hooks/use-contacts'
 import { useState } from 'react'
 import type { Chat } from '../model/sidebar.types'
+import type { Contact } from '@/entities/contact/types/contact.types'
+import { ContactListDialog } from '@/features/contacts/list-contacts/ui/contact-list-dialog'
 
 interface ChatSidebarProps {
   chats: Chat[]
@@ -30,12 +31,10 @@ export default function ChatSidebar({ onStartChat, onDeleteContact }: ChatSideba
   const [activeContact, setActiveContact] = useState<Contact | null>(null)
 
   const contacts: Contact[] = users.map(user => ({
-    _id: user._id,
-    nombre: user.nombre || 'Usuario',
-    telefono_e164: user.telefono_e164 || '',
-    avatar: user.avatar || 'U',
-    avatarColor: user.avatarColor || 'bg-primary/20',
-    online: user.online,
+    id: user.id,
+    alias: user.alias,
+    phone: user.phone,
+    username: user.username,
   }))
 
   const handleSelectContact = (contact: Contact) => {
@@ -67,11 +66,7 @@ export default function ChatSidebar({ onStartChat, onDeleteContact }: ChatSideba
 
         {/* Botones */}
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-          <ContactListDialog
-            contacts={contacts}
-            onStartChat={onStartChat}
-            onDeleteContact={onDeleteContact}
-          />
+          <ContactListDialog onStartChat={onStartChat} onDeleteContact={onDeleteContact} />
           <AddContactDialog />
           <InfoUserDialog />
         </div>
@@ -102,22 +97,20 @@ export default function ChatSidebar({ onStartChat, onDeleteContact }: ChatSideba
         <div className="p-1 sm:p-2">
           {contacts.map(contact => (
             <ChatPreviewItem
-              key={contact._id}
+              key={contact.id}
               chat={{
-                _id: contact._id,
-                name: contact.nombre,
-                avatar: contact.avatar,
-                avatarColor: contact.avatarColor,
-                pinned: false,
-                muted: false,
-                online: contact.online,
+                _id: contact.id,
+                name: contact.alias,
+                avatar: contact.phone,
+                avatarColor: contact.phone,
                 lastMessage: '',
                 time: '',
                 unread: 0,
+                online: false,
                 messages: [],
                 category: 'personal',
               }}
-              active={activeContact?._id === contact._id}
+              active={activeContact?.id === contact.id}
               onSelect={() => handleSelectContact(contact)}
               onDeleteChat={() => {}}
               onTogglePin={() => {}}
