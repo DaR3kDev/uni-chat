@@ -1,98 +1,72 @@
 import { Button } from '@/shared/ui/button'
-import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from '@/shared/ui/field'
-import { Input } from '@/shared/ui/input'
-import { Link } from '@tanstack/react-router'
-
-import { useForm } from 'react-hook-form'
+import { Field, FieldGroup, FieldLabel } from '@/shared/ui/field'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 
 import { loginSchema, type LoginSchema } from '../schemas/login.schema'
 import { useLogin } from '../hooks/use-login'
+import { Link } from '@tanstack/react-router'
 
 export function LoginForm() {
   const { mutate, isPending } = useLogin()
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginSchema>({
+  const { control, handleSubmit } = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      phone: '',
     },
   })
 
-  const onSubmit = (data: LoginSchema) => {
-    mutate(data)
-  }
+  const onSubmit = (data: LoginSchema) => mutate(data)
 
   return (
-    <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
-      <FieldGroup className="space-y-5 sm:space-y-6">
+    <form className="w-full max-w-md mx-auto px-4 sm:px-0" onSubmit={handleSubmit(onSubmit)}>
+      <FieldGroup className="space-y-6 w-full">
         {/* HEADER */}
-        <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">Inicia sesión</h1>
-          <p className="text-sm text-muted-foreground">Ingresa tus datos para continuar</p>
+        <div className="text-center space-y-1">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold">Iniciar sesión</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">Ingresa tu número de teléfono</p>
         </div>
 
-        {/* EMAIL */}
-        <Field className="space-y-2">
-          <FieldLabel htmlFor="email">Correo electrónico</FieldLabel>
-          <Input
-            id="email"
-            type="email"
-            placeholder="tu@correo.com"
-            className="h-10 sm:h-11"
-            {...register('email')}
-          />
-          {errors.email && (
-            <FieldDescription className="text-red-500">{errors.email.message}</FieldDescription>
-          )}
-        </Field>
+        {/* PHONE */}
+        <Field className="space-y-2 w-full">
+          <FieldLabel>Teléfono</FieldLabel>
 
-        {/* PASSWORD */}
-        <Field className="space-y-2">
-          <FieldLabel htmlFor="password">Contraseña</FieldLabel>
-          <Input
-            id="password"
-            type="password"
-            placeholder="••••••••"
-            className="h-10 sm:h-11"
-            {...register('password')}
+          <Controller
+            name="phone"
+            control={control}
+            render={({ field }) => (
+              <div className="phone-wrapper">
+                <PhoneInput
+                  {...field}
+                  defaultCountry="CO"
+                  international
+                  countryCallingCodeEditable={false}
+                  className="phone-input"
+                />
+              </div>
+            )}
           />
-          {errors.password && (
-            <FieldDescription className="text-red-500">{errors.password.message}</FieldDescription>
-          )}
         </Field>
 
         {/* BUTTON */}
-        <Field>
-          <Button
-            type="submit"
-            className="w-full h-10 sm:h-11 text-sm sm:text-base"
-            disabled={isPending}
-          >
-            {isPending ? 'Ingresando...' : 'Iniciar sesión'}
-          </Button>
-        </Field>
+        <Button
+          type="submit"
+          className="w-full h-11 sm:h-12 text-sm sm:text-base"
+          disabled={isPending}
+        >
+          {isPending ? 'Enviando...' : 'Continuar'}
+        </Button>
 
-        {/* SEPARATOR */}
-        <FieldSeparator className="text-xs sm:text-sm">O continúa con</FieldSeparator>
-
-        {/* REGISTER */}
-        <Field>
-          <FieldDescription className="text-center text-sm">
-            ¿No tienes una cuenta?{' '}
-            <Link
-              to="/register"
-              className="underline underline-offset-4 font-medium hover:text-primary"
-            >
-              Regístrate
-            </Link>
-          </FieldDescription>
-        </Field>
+        {/* REGISTER LINK */}
+        <div className="text-center text-xs sm:text-sm text-muted-foreground">
+          ¿No tienes cuenta?{' '}
+          <Link to="/register" className="text-primary font-medium hover:underline">
+            Regístrate
+          </Link>
+        </div>
       </FieldGroup>
     </form>
   )

@@ -1,48 +1,49 @@
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
-import { Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/shared/ui/button'
 import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/shared/ui/field'
 import { Input } from '@/shared/ui/input'
 import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
+
 import { registerSchema, type RegisterSchema } from '../schemas/register.schema'
 import { useRegister } from '../hooks/use-register'
 
 export function RegisterForm() {
   const [step, setStep] = useState(1)
-  const [phone, setPhone] = useState<string | undefined>()
-
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirm, setShowConfirm] = useState(false)
 
   const mutation = useRegister()
 
   const {
     register,
     handleSubmit,
+    trigger,
+    control,
     formState: { errors },
   } = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
+    mode: 'onTouched',
   })
 
+  const nextStep = async () => {
+    const valid = await trigger(['username', 'email'])
+    if (valid) setStep(2)
+  }
+
+  // SUBMIT FINAL
   const onSubmit = (data: RegisterSchema) => {
-    const cleanPhone = phone?.replace(/\D/g, '') || ''
+    console.log('SUBMIT DATA:', data)
 
     mutation.mutate({
-      nombre: data.nombre,
-      username: data.username,
-      email: data.email,
-      password: data.password,
-      codigo_pais: '+57',
-      numero: cleanPhone.replace(/^57/, ''),
+      ...data,
     })
   }
 
   return (
     <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
-      <FieldGroup className="space-y-5 sm:space-y-6">
+      <FieldGroup className="space-y-5">
         {/* HEADER */}
         <div className="text-center">
           <h1 className="text-xl font-bold">Crear cuenta</h1>
@@ -52,16 +53,12 @@ export function RegisterForm() {
         {/* STEPS */}
         <div className="relative overflow-hidden">
           <div
-            className={`flex transition-transform ${step === 1 ? 'translate-x-0' : '-translate-x-full'}`}
+            className={`flex transition-transform ${
+              step === 1 ? 'translate-x-0' : '-translate-x-full'
+            }`}
           >
             {/* STEP 1 */}
-            <div className="min-w-full space-y-4 pr-1">
-              <Field>
-                <FieldLabel>Nombre</FieldLabel>
-                <Input placeholder="Juan Pérez" {...register('nombre')} />
-                <p className="text-red-500 text-xs">{errors.nombre?.message}</p>
-              </Field>
-
+            <div className="min-w-full space-y-4 pr-2">
               <Field>
                 <FieldLabel>Usuario</FieldLabel>
                 <Input placeholder="juan_dev" {...register('username')} />
@@ -74,56 +71,30 @@ export function RegisterForm() {
                 <p className="text-red-500 text-xs">{errors.email?.message}</p>
               </Field>
 
-              <Button type="button" onClick={() => setStep(2)}>
+              <Button type="button" onClick={nextStep}>
                 Siguiente
               </Button>
             </div>
 
             {/* STEP 2 */}
-            <div className="min-w-full space-y-4 pl-1">
+            <div className="min-w-full space-y-4 pl-2">
               <Field>
                 <FieldLabel>Teléfono</FieldLabel>
-                <PhoneInput international defaultCountry="CO" value={phone} onChange={setPhone} />
-              </Field>
 
-              {/* PASSWORD */}
-              <Field>
-                <FieldLabel>Contraseña</FieldLabel>
-                <div className="relative">
-                  <Input
-                    placeholder="Mínimo 8 caracteres"
-                    type={showPassword ? 'text' : 'password'}
-                    {...register('password')}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-sm"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-                <p className="text-red-500 text-xs">{errors.password?.message}</p>
-              </Field>
+                <Controller
+                  name="phone"
+                  control={control}
+                  render={({ field }) => (
+                    <PhoneInput
+                      international
+                      defaultCountry="CO"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
 
-              {/* CONFIRM PASSWORD */}
-              <Field>
-                <FieldLabel>Confirmar contraseña</FieldLabel>
-                <div className="relative">
-                  <Input
-                    placeholder="Repite tu contraseña"
-                    type={showConfirm ? 'text' : 'password'}
-                    {...register('confirmPassword')}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirm(!showConfirm)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-sm"
-                  >
-                    {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-                <p className="text-red-500 text-xs">{errors.confirmPassword?.message}</p>
+                <p className="text-red-500 text-xs">{errors.phone?.message}</p>
               </Field>
 
               <div className="flex gap-2">
@@ -139,6 +110,7 @@ export function RegisterForm() {
           </div>
         </div>
 
+        {/* LOGIN LINK */}
         <Field>
           <FieldDescription className="text-center text-sm">
             ¿Ya tienes cuenta?{' '}

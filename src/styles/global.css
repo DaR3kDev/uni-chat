@@ -126,6 +126,90 @@
   }
 }
 
+/* CONTENEDOR PRINCIPAL */
+.phone-wrapper {
+  width: 100%;
+}
+
+/* INPUT PRINCIPAL */
+.phone-input {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+/* TABLET */
+@media (min-width: 640px) {
+  .phone-input {
+    height: 48px;
+    font-size: 15px;
+    padding: 0 14px;
+  }
+}
+
+/* DESKTOP */
+@media (min-width: 1024px) {
+  .phone-input {
+    height: 50px;
+    font-size: 16px;
+  }
+}
+
+/* INPUT INTERNO */
+.PhoneInputInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--foreground);
+}
+
+/* PAÍS SELECT */
+.PhoneInputCountry {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.PhoneInputCountrySelect {
+  background: var(--background);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  padding: 4px;
+  max-width: 90px;
+  outline: none;
+}
+
+/* MOBILE OPTIMIZADO */
+@media (max-width: 480px) {
+  .phone-input {
+    height: 46px;
+    padding: 0 10px;
+  }
+
+  .PhoneInputCountrySelect {
+    max-width: 70px;
+    font-size: 11px;
+  }
+}
+
+/* DROPDOWN OPTIONS */
+.PhoneInputCountrySelect option {
+  background: var(--background);
+  color: var(--foreground);
+}
+
 /* ---------- VIEW TRANSITIONS ---------- */
 ::view-transition-group(root) {
   animation-duration: 2s; /* antes 0.7s */

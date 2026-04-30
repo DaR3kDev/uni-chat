@@ -1,70 +1,50 @@
 import { z } from 'zod'
 
-const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/
-const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{8,50}$/
+const usernameRegex = /^(?!.*__)[a-z0-9](?:[a-z0-9_]{1,18}[a-z0-9])?$/
+const phoneRegex = /^\+[1-9]\d{7,14}$/
 
-export const registerSchema = z
-  .object({
-    nombre: z
-      .string()
-      .trim()
-      .min(2, 'El nombre es muy corto')
-      .max(50, 'El nombre es muy largo')
-      .regex(nameRegex, 'Solo letras y espacios')
-      .refine(val => val === val.trim(), 'No espacios al inicio o final')
-      .refine(val => !/\s{2,}/.test(val), 'No espacios dobles'),
+const disposableEmailDomains = [
+  'tempmail.com',
+  'mailinator.com',
+  'guerrillamail.com',
+  '10minutemail.com',
+]
 
-    username: z
-      .string()
-      .trim()
-      .toLowerCase()
-      .min(3, 'Mínimo 3 caracteres')
-      .max(20, 'Máximo 20 caracteres')
-      .regex(usernameRegex, 'Solo letras, números y _')
-      .refine(val => !val.includes(' '), 'No puede contener espacios'),
+export const registerSchema = z.object({
+  username: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(3, 'Mínimo 3 caracteres')
+    .max(20, 'Máximo 20 caracteres')
+    .regex(usernameRegex, 'Username inválido (solo letras, números y _)')
+    .refine(v => !v.includes(' '), 'No puede contener espacios')
+    .refine(v => !v.startsWith('_') && !v.endsWith('_'), 'No puede iniciar o terminar en _'),
 
-    email: z
-      .string()
-      .trim()
-      .toLowerCase()
-      .email('Email inválido')
-      .max(100, 'Email demasiado largo'),
+  phone: z
+    .string()
+    .trim()
+    .min(8, 'Número de teléfono inválido')
+    .max(20, 'Número de teléfono demasiado largo')
+    .refine(val => !/\s/.test(val), {
+      message: 'No puede contener espacios',
+    })
+    .refine(val => phoneRegex.test(val), {
+      message: 'Formato inválido. Debe ser internacional tipo +573001234567 (E.164)',
+    }),
 
-    password: z
-      .string()
-      .min(8, 'Mínimo 8 caracteres')
-      .max(50, 'Máximo 50 caracteres')
-      .regex(passwordRegex, 'Debe incluir mayúscula, minúscula, número y símbolo')
-      .refine(val => !val.includes(' '), 'No puede contener espacios'),
-
-    confirmPassword: z.string(),
-  })
-  .superRefine((data, ctx) => {
-    if (data.password !== data.confirmPassword) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['confirmPassword'],
-        message: 'Las contraseñas no coinciden',
-      })
-    }
-
-    if (data.username === data.password) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['username'],
-        message: 'Username no puede ser igual a la contraseña',
-      })
-    }
-
-    if (data.password.toLowerCase().includes(data.username)) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['password'],
-        message: 'La contraseña no debe contener el username',
-      })
-    }
-  })
-  .strict()
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(5, 'Email demasiado corto')
+    .max(100, 'Email demasiado largo')
+    .email('Email inválido')
+    .refine(v => !/\s/.test(v), 'Email no puede contener espacios')
+    .refine(v => {
+      const domain = v.split('@')[1]
+      return !disposableEmailDomains.includes(domain)
+    }, 'No se permiten correos temporales'),
+})
 
 export type RegisterSchema = z.infer<typeof registerSchema>

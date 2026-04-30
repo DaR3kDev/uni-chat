@@ -15,11 +15,11 @@ import {
 
 import { MessageBubble } from './messages-buble'
 import { useEffect, useRef, useState } from 'react'
-import { useAuthStore } from '@/entities/user/model/store/auth.store'
 import { useConversation } from '../hooks/use-conversation'
 import { useSendMessage } from '../hooks/use-send-message'
 import { DropdownGeneric } from '@/widgets/dropdwn/ui/dropdwn-generic'
 import type { Chat } from '@/widgets/sidebar/model/sidebar.types'
+import { useAuthStore } from '@/entities/auth/model/store/auth.store'
 
 interface ChatViewProps {
   chat: Chat | null

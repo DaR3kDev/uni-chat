@@ -1,23 +1,24 @@
 import { z } from 'zod'
 
-const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+const phoneRegex = /^\+[1-9]\d{7,14}$/
+
+// + obligatorio
+// país no puede empezar en 0
+// mínimo 8 dígitos después del +
+// máximo 15 dígitos (E.164)
 
 export const loginSchema = z.object({
-  email: z
+  phone: z
     .string()
     .trim()
-    .toLowerCase()
-    .min(5, 'Email inválido')
-    .max(100, 'Email demasiado largo')
-    .regex(emailRegex, 'Formato de email inválido')
-    .refine(val => !val.includes(' '), 'El email no puede contener espacios'),
-
-  password: z
-    .string()
-    .min(8, 'La contraseña es muy corta (mínimo 8)')
-    .max(50, 'La contraseña es muy larga')
-    .refine(val => !val.includes(' '), 'No puede contener espacios')
-    .refine(val => val.trim() === val, 'No espacios al inicio o final'),
+    .min(8, 'Número de teléfono inválido')
+    .max(20, 'Número de teléfono demasiado largo')
+    .refine(val => !/\s/.test(val), {
+      message: 'No puede contener espacios',
+    })
+    .refine(val => phoneRegex.test(val), {
+      message: 'Formato inválido. Debe ser internacional tipo +573001234567 (E.164)',
+    }),
 })
 
 export type LoginSchema = z.infer<typeof loginSchema>

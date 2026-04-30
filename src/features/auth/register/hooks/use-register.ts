@@ -1,19 +1,24 @@
+import { register } from '@/entities/auth/api/auth.api'
+import type { ApiError } from '@/shared/types/api-error'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { AxiosError } from 'axios'
 import { toast } from 'sonner'
-import { register } from '../../../../entities/user/api/register.api'
-import type { RegisterPayload, RegisterResponse, ApiError } from '../types/register.types'
-import { authStorage } from '@/entities/user/model/storage/auth-storage'
+import type { AuthTokenResponse } from '@/entities/auth/types/auth.types'
+import { authStorage } from '@/entities/auth/model/storage/auth-storage'
 
 export function useRegister() {
   const navigate = useNavigate()
 
-  return useMutation<RegisterResponse, AxiosError<ApiError>, RegisterPayload>({
+  return useMutation<
+    AuthTokenResponse,
+    AxiosError<ApiError>,
+    { username: string; phone: string; email: string }
+  >({
     mutationFn: register,
-
+    
     onSuccess: data => {
-      authStorage.setToken(data.access_token)
+      authStorage.setToken(data.accessToken)
 
       toast.success('Cuenta creada correctamente')
       navigate({ to: '/chat' })

@@ -4,7 +4,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shar
 
 import { useDialogStore } from '@/widgets/dialog/store/dialogStore'
 import { AddContactForm } from './add-contact-form'
-import { useAuthStore } from '@/entities/user/model/store/auth.store'
+import { useAuthStore } from '@/entities/auth/model/store/auth.store'
 
 export function AddContactDialog() {
   const { openDialog, closeDialog } = useDialogStore()
