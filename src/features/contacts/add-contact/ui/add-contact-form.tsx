@@ -1,12 +1,11 @@
-import { Button } from '@/shared/ui/button'
-import { Input } from '@/shared/ui/input'
-import { Label } from '@/shared/ui/label'
-
+import { Controller, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { Button } from '@/shared/ui/button'
+import { Input } from '@/shared/ui/input'
+import { Label } from '@/shared/ui/label'
 
 import { contactSchema, type ContactSchema } from '../schemas/contact.schema'
 import { useCreateContact } from '../hooks/use-create-contact'
@@ -45,10 +44,11 @@ export function AddContactForm({ onSuccess }: AddContactFormProps) {
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 pt-2">
       {/* ALIAS */}
       <div className="flex flex-col gap-1">
-        <Label>Nombre</Label>
-        <Input {...register('alias')} placeholder="Ej: Juan Pérez" />
+        <Label htmlFor="alias">Nombre</Label>
 
-        {errors.alias && <span className="text-red-500 text-sm">{errors.alias.message}</span>}
+        <Input id="alias" placeholder="Ej: Juan Pérez" {...register('alias')} />
+
+        {errors.alias && <span className="text-sm text-red-500">{errors.alias.message}</span>}
       </div>
 
       {/* PHONE */}
@@ -69,7 +69,7 @@ export function AddContactForm({ onSuccess }: AddContactFormProps) {
           )}
         />
 
-        {errors.phone && <span className="text-red-500 text-sm">{errors.phone.message}</span>}
+        {errors.phone && <span className="text-sm text-red-500">{errors.phone.message}</span>}
       </div>
 
       {/* SUBMIT */}

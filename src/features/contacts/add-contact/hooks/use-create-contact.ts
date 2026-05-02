@@ -1,7 +1,9 @@
 import { toast } from 'sonner'
 import type { AxiosError } from 'axios'
 import { useMutation } from '@tanstack/react-query'
+
 import { createContact } from '@/entities/contact/api/contacts.api'
+
 import type { ApiError } from '@/shared/types/api-error'
 
 export function useCreateContact() {
@@ -13,7 +15,7 @@ export function useCreateContact() {
     },
 
     onError: error => {
-      const message = error.response?.data?.detail || 'Error al crear contacto'
+      const message = error.response?.data?.Message ?? 'Error al crear contacto'
 
       toast.error(message)
     },

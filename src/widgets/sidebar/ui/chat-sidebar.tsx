@@ -1,124 +1,103 @@
+import { useMemo, useState, useCallback } from 'react'
 import { Search } from 'lucide-react'
-import { AddContactDialog } from '@/features/contacts/add-contact/ui/add-contact-dialog'
-import { stories } from '@/shared/lib/chat-data'
+
 import { ScrollArea } from '@/shared/ui/scroll-area'
-import { ChatPreviewItem } from '@/features/contacts/list-contacts/ui/chat-preview-item'
-import { StoriesRow } from '@/features/stories/components/stories-row'
-import { FiltersComponents } from '@/features/filters/components/filters-components'
-import { InfoUserDialog } from '@/features/settings/components/info-user-panel'
-import { useAuthStore } from '@/entities/auth/model/store/auth.store'
-import { useContacts } from '@/features/contacts/list-contacts/hooks/use-contacts'
-import { useState } from 'react'
-import type { Chat } from '../model/sidebar.types'
-import type { Contact } from '@/entities/contact/types/contact.types'
+
+import { AddContactDialog } from '@/features/contacts/add-contact/ui/add-contact-dialog'
 import { ContactListDialog } from '@/features/contacts/list-contacts/ui/contact-list-dialog'
+import { InfoUserDialog } from '@/features/settings/ui/info-user-panel'
+
+import { FiltersComponents } from '@/features/filters/components/filters-components'
+import { ConversationPreviewItem } from '@/features/contacts/list-contacts/ui/conversation-preview-item'
+
+import type { Conversation } from '@/entities/conversation/types/conversation.types'
+import { useConversations } from '@/features/contacts/list-contacts/hooks/use-conversations'
 
 interface ChatSidebarProps {
-  chats: Chat[]
-  activeChatId: string | null
-  onSelectChat: (chatId: string) => void
-  onAddContact: (name: string, phone: string) => void
-  onStartChat: (contact: Contact) => void
-  onDeleteChat: (chatId: string) => void
-  onTogglePin: (chatId: string) => void
-  onToggleMute: (chatId: string) => void
-  onDeleteContact: (contactId: string) => void
+  onSelectConversation: (conversation: Conversation) => void
 }
 
-export default function ChatSidebar({ onStartChat, onDeleteContact }: ChatSidebarProps) {
-  const userId = useAuthStore(state => state.user?.id)
-  const { data: users = [] } = useContacts(userId ?? '')
-  const [activeContact, setActiveContact] = useState<Contact | null>(null)
+export default function ChatSidebar({ onSelectConversation }: ChatSidebarProps) {
+  const [search, setSearch] = useState('')
+  const [activeConversationId, setActiveConversationId] = useState<string | null>(null)
 
-  const contacts: Contact[] = users.map(user => ({
-    id: user.id,
-    alias: user.alias,
-    phone: user.phone,
-    username: user.username,
-  }))
+  const { data: conversations = [] } = useConversations()
 
-  const handleSelectContact = (contact: Contact) => {
-    setActiveContact(contact)
-    onStartChat(contact)
-  }
+  const filteredConversations = useMemo(() => {
+    const query = search.trim().toLowerCase()
+
+    if (!query) return conversations
+
+    return conversations.filter(c => c.username?.toLowerCase().includes(query))
+  }, [conversations, search])
+
+  const handleSelectConversation = useCallback(
+    (conversation: Conversation) => {
+      setActiveConversationId(conversation.conversationId)
+      onSelectConversation(conversation)
+    },
+    [onSelectConversation],
+  )
 
   return (
-    <div
-      className="flex h-full w-full flex-col overflow-hidden bg-card 
-      sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl"
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between px-3 sm:px-4 pt-3 pb-2">
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-          <img
-            src="./img/logo.webp"
-            alt="UniChat Logo"
-            className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 object-contain"
-          />
+    <aside className="flex h-full w-full flex-col overflow-hidden bg-card">
+      {/* HEADER */}
+      <header className="flex items-center justify-between border-b border-border/40 px-4 py-3">
+        <div className="flex items-center gap-3">
+          <img src="./img/logo.webp" alt="UniChat Logo" className="h-10 w-10 object-contain" />
 
-          <div className="min-w-0">
-            <h1 className="text-lg sm:text-xl lg:text-2xl text-card-foreground truncate">
-              UniChat
-            </h1>
-            <p className="text-xs sm:text-sm text-muted-foreground">Mensajes</p>
+          <div className="leading-tight">
+            <h1 className="text-lg font-semibold text-card-foreground">UniChat</h1>
+            <p className="text-xs text-muted-foreground">Mensajes</p>
           </div>
         </div>
 
-        {/* Botones */}
-        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-          <ContactListDialog onStartChat={onStartChat} onDeleteContact={onDeleteContact} />
+        <div className="flex items-center gap-2">
+          <ContactListDialog />
           <AddContactDialog />
           <InfoUserDialog />
         </div>
-      </div>
+      </header>
 
-      {/* Search */}
-      <div className="px-3 sm:px-4 py-2">
+      {/* SEARCH */}
+      <div className="px-4 py-3">
         <div className="flex items-center gap-2 rounded-xl bg-secondary px-3 py-2">
-          <Search className="size-4 shrink-0 text-muted-foreground" />
+          <Search className="size-4 text-muted-foreground" />
+
           <input
-            type="text"
-            placeholder="Buscar..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Buscar conversaciones..."
             className="w-full bg-transparent text-sm outline-none"
           />
         </div>
       </div>
 
-      {/* Stories */}
-      <div className="px-2 sm:px-3">
-        <StoriesRow stories={stories} />
+      {/* FILTERS */}
+      <div className="px-2">
+        <FiltersComponents />
       </div>
 
-      {/* Filters */}
-      <FiltersComponents />
-
-      {/* Chats */}
+      {/* CONVERSATIONS */}
       <ScrollArea className="flex-1 min-h-0">
-        <div className="p-1 sm:p-2">
-          {contacts.map(contact => (
-            <ChatPreviewItem
-              key={contact.id}
-              chat={{
-                _id: contact.id,
-                name: contact.alias,
-                avatar: contact.phone,
-                avatarColor: contact.phone,
-                lastMessage: '',
-                time: '',
-                unread: 0,
-                online: false,
-                messages: [],
-                category: 'personal',
-              }}
-              active={activeContact?.id === contact.id}
-              onSelect={() => handleSelectContact(contact)}
-              onDeleteChat={() => {}}
-              onTogglePin={() => {}}
-              onToggleMute={() => {}}
-            />
-          ))}
+        <div className="space-y-1 p-2">
+          {filteredConversations.length === 0 ? (
+            <div className="flex min-h-[200px] items-center justify-center">
+              <p className="text-sm text-muted-foreground">No hay conversaciones</p>
+            </div>
+          ) : (
+            filteredConversations.map(conversation => (
+              <ConversationPreviewItem
+                key={conversation.conversationId}
+                conversation={conversation}
+                active={activeConversationId === conversation.conversationId}
+                onSelect={() => handleSelectConversation(conversation)}
+                onDeleteConversation={() => {}}
+              />
+            ))
+          )}
         </div>
       </ScrollArea>
-    </div>
+    </aside>
   )
 }

@@ -4,18 +4,24 @@ import { useDialogStore } from '../store/dialogStore'
 export function FormDialog() {
   const { open, closeDialog, title, content } = useDialogStore()
 
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      closeDialog()
+    }
+  }
+
+  const handleInteractOutside = (event: Event) => {
+    event.preventDefault()
+  }
+
   return (
-    <Dialog
-      open={open}
-      onOpenChange={value => {
-        if (!value) closeDialog()
-      }}
-    >
-      <DialogContent onInteractOutside={e => e.preventDefault()}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent onInteractOutside={handleInteractOutside}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        {content}
+
+        <div className="mt-2">{content}</div>
       </DialogContent>
     </Dialog>
   )

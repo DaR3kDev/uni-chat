@@ -1,20 +1,21 @@
 import { useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
-import { Button } from '@/shared/ui/button'
-import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/shared/ui/field'
-import { Input } from '@/shared/ui/input'
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
+
+import { Button } from '@/shared/ui/button'
+import { Field, FieldGroup, FieldLabel } from '@/shared/ui/field'
+import { Input } from '@/shared/ui/input'
 
 import { registerSchema, type RegisterSchema } from '../schemas/register.schema'
 import { useRegister } from '../hooks/use-register'
 
 export function RegisterForm() {
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState<1 | 2>(1)
 
-  const mutation = useRegister()
+  const { mutate, isPending } = useRegister()
 
   const {
     register,
@@ -27,22 +28,20 @@ export function RegisterForm() {
     mode: 'onTouched',
   })
 
-  const nextStep = async () => {
-    const valid = await trigger(['username', 'email'])
-    if (valid) setStep(2)
+  const goNextStep = async () => {
+    const isValid = await trigger(['username', 'email'])
+    if (isValid) setStep(2)
   }
 
-  // SUBMIT FINAL
   const onSubmit = (data: RegisterSchema) => {
-    console.log('SUBMIT DATA:', data)
-
-    mutation.mutate({
-      ...data,
-    })
+    mutate(data)
   }
+
+  const ErrorText = ({ message }: { message?: string }) =>
+    message ? <p className="text-xs text-red-500">{message}</p> : null
 
   return (
-    <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full">
       <FieldGroup className="space-y-5">
         {/* HEADER */}
         <div className="text-center">
@@ -53,7 +52,7 @@ export function RegisterForm() {
         {/* STEPS */}
         <div className="relative overflow-hidden">
           <div
-            className={`flex transition-transform ${
+            className={`flex transition-transform duration-300 ${
               step === 1 ? 'translate-x-0' : '-translate-x-full'
             }`}
           >
@@ -62,16 +61,16 @@ export function RegisterForm() {
               <Field>
                 <FieldLabel>Usuario</FieldLabel>
                 <Input placeholder="juan_dev" {...register('username')} />
-                <p className="text-red-500 text-xs">{errors.username?.message}</p>
+                <ErrorText message={errors.username?.message} />
               </Field>
 
               <Field>
                 <FieldLabel>Email</FieldLabel>
                 <Input placeholder="correo@ejemplo.com" {...register('email')} />
-                <p className="text-red-500 text-xs">{errors.email?.message}</p>
+                <ErrorText message={errors.email?.message} />
               </Field>
 
-              <Button type="button" onClick={nextStep}>
+              <Button type="button" onClick={goNextStep}>
                 Siguiente
               </Button>
             </div>
@@ -94,7 +93,7 @@ export function RegisterForm() {
                   )}
                 />
 
-                <p className="text-red-500 text-xs">{errors.phone?.message}</p>
+                <ErrorText message={errors.phone?.message} />
               </Field>
 
               <div className="flex gap-2">
@@ -102,23 +101,21 @@ export function RegisterForm() {
                   Atrás
                 </Button>
 
-                <Button type="submit" disabled={mutation.isPending}>
-                  {mutation.isPending ? 'Creando...' : 'Crear cuenta'}
+                <Button type="submit" disabled={isPending}>
+                  {isPending ? 'Creando...' : 'Crear cuenta'}
                 </Button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* LOGIN LINK */}
-        <Field>
-          <FieldDescription className="text-center text-sm">
-            ¿Ya tienes cuenta?{' '}
-            <Link to="/login" className="underline font-medium">
-              Inicia sesión
-            </Link>
-          </FieldDescription>
-        </Field>
+        {/* LOGIN */}
+        <div className="text-center text-sm text-muted-foreground">
+          ¿Ya tienes cuenta?{' '}
+          <Link to="/login" className="font-medium underline">
+            Inicia sesión
+          </Link>
+        </div>
       </FieldGroup>
     </form>
   )

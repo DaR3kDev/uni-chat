@@ -15,3 +15,7 @@ export const getMe = async () => {
   const { data } = await http.get<MeResponse>('auth/me')
   return data
 }
+
+export const logout = async () => {
+  await http.post('auth/logout')
+}

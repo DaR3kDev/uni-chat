@@ -27,18 +27,28 @@ http.interceptors.response.use(
   async error => {
     const originalRequest = error.config
 
+    console.log('ERROR STATUS:', error.response?.status)
+
     if (error.response?.status === 401 && !originalRequest._retry) {
+      console.log('Intentando refresh token...')
+
       originalRequest._retry = true
 
       try {
         const { data } = await http.post('/auth/refresh')
 
+        console.log('Nuevo access token:', data.accessToken)
+
         authStorage.setToken(data.accessToken)
 
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`
 
+        console.log('Reintentando request original...')
+
         return http(originalRequest)
       } catch (err) {
+        console.log('Refresh falló')
+
         authStorage.clear()
         return Promise.reject(err)
       }

@@ -3,19 +3,6 @@ export interface Reaction {
   count: number
 }
 
-export interface ChatSidebarProps {
-  chats: Chat[]
-  contacts: Contact[]
-  activeChatId: string | null
-  onSelectChat: (chatId: string) => void
-  onAddContact: (name: string, phone: string) => void
-  onStartChat: (contact: Contact) => void
-  onDeleteChat: (chatId: string) => void
-  onTogglePin: (chatId: string) => void
-  onToggleMute: (chatId: string) => void
-  onDeleteContact: (contactId: string) => void
-}
-
 export interface Chat {
   _id: string
   nombre: string

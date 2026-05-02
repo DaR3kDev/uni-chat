@@ -1,81 +1,133 @@
-import { useEffect, useState } from 'react'
-import { CheckCheck, Mic, Plus } from 'lucide-react'
-import type { Message } from '../types/messages.types'
-import type { Reaction } from '@/widgets/sidebar/model/sidebar.types'
+import { useMemo, useState } from 'react'
 
-const QUICK_REACTIONS = ['❤️', '👍', '😂', '🔥', '😮']
+import { Check, CheckCheck, Clock3, Plus, TriangleAlert } from 'lucide-react'
 
-interface Props {
+import type { Message } from '@/entities/chat/domain/message'
+
+const QUICK_REACTIONS = ['❤️', '👍', '😂', '🔥', '😍', '👏', '😎', '😮', '😭', '🎉', '🙏', '🤝']
+
+interface MessageBubbleProps {
   message: Message
+  isMine: boolean
 }
 
-export function MessageBubble({ message }: Props) {
-  const [showReactions, setShowReactions] = useState(false)
-  const [reactions, setReactions] = useState<Reaction[]>(message.reactions ?? [])
+export function MessageBubble({ message, isMine }: MessageBubbleProps) {
+  const [isReactionPickerOpen, setIsReactionPickerOpen] = useState(false)
 
-  const isMine = message.fromMe === true
-
-  useEffect(() => {
-    setReactions(message.reactions ?? [])
-  }, [message.reactions])
-
-  const toggleReaction = (emoji: string) => {
-    setReactions(prev => {
-      const exists = prev.find(r => r.emoji === emoji)
-      if (exists) return prev.filter(r => r.emoji !== emoji)
-      return [...prev, { emoji, count: 1 }]
+  const formattedTime = useMemo(() => {
+    return new Date(message.createdAt).toLocaleTimeString('es-CO', {
+      hour: '2-digit',
+      minute: '2-digit',
     })
-    setShowReactions(false)
+  }, [message.createdAt])
+
+  const bubbleClasses = isMine
+    ? 'bg-primary text-primary-foreground rounded-br-md'
+    : 'bg-background border text-foreground rounded-bl-md'
+
+  const footerClasses = isMine ? 'text-primary-foreground/70' : 'text-muted-foreground'
+
+  const reactionPositionClasses = isMine ? 'right-0' : 'left-0'
+
+  const reactionButtonPositionClasses = isMine ? '-left-10' : '-right-10'
+
+  function handleToggleReactions() {
+    setIsReactionPickerOpen(previous => !previous)
+  }
+
+  function renderMessageStatus() {
+    if (!isMine) {
+      return null
+    }
+
+    switch (message.status) {
+      case 'sending':
+        return <Clock3 className="size-3 text-yellow-400" />
+
+      case 'sent':
+        return <Check className="size-3 text-muted-foreground" />
+
+      case 'delivered':
+        return <CheckCheck className="size-3 text-muted-foreground" />
+
+      case 'read':
+        return <CheckCheck className="size-3 text-sky-400" />
+
+      case 'error':
+        return <TriangleAlert className="size-3 text-red-400" />
+
+      default:
+        return null
+    }
   }
 
   return (
-    <div className={`flex w-full group ${isMine ? 'justify-end' : 'justify-start'}`}>
-      <div className="relative max-w-[75%]">
-        {/* bubble */}
-        <div
-          className={`rounded-2xl px-3 py-2 ${isMine ? 'bg-primary text-white' : 'bg-card border'}`}
-        >
-          {message.isVoice ? (
-            <div className="flex gap-2 items-center">
-              <Mic className="size-4" />
-              <span className="text-xs">{message.voiceDuration}</span>
-            </div>
-          ) : (
-            <p className="text-sm">{message.contenido}</p>
-          )}
-
-          <div className="mt-1 flex justify-end gap-1 text-[10px] opacity-70">
-            <span>{message.created_at}</span>
-            {isMine && <CheckCheck className="size-3" />}
-          </div>
-        </div>
-
-        {/* reactions */}
-        {reactions.length > 0 && (
-          <div className="absolute -bottom-3 flex gap-1 rounded-full bg-card border px-2 py-0.5">
-            {reactions.map((r, i) => (
-              <span key={r.emoji + i}>{r.emoji}</span>
-            ))}
-          </div>
-        )}
-
-        {/* quick add */}
-        <button
-          onClick={() => setShowReactions(v => !v)}
-          className="absolute top-1/2 hidden -translate-y-1/2 size-6 group-hover:flex"
-        >
-          <Plus className="size-3" />
-        </button>
-
-        {showReactions && (
-          <div className="absolute -top-10 flex gap-1 bg-card border px-2 py-1 rounded-xl">
-            {QUICK_REACTIONS.map(e => (
-              <button key={e} onClick={() => toggleReaction(e)}>
-                {e}
+    <div className={`group flex w-full ${isMine ? 'justify-end' : 'justify-start'}`}>
+      <div className="relative max-w-[82%]">
+        {/* SELECTOR DE REACCIONES */}
+        {isReactionPickerOpen && (
+          <div
+            className={`
+              absolute -top-14 z-20 flex flex-wrap items-center gap-1
+              rounded-2xl border bg-background/95 p-2 shadow-xl backdrop-blur
+              ${reactionPositionClasses}
+            `}
+          >
+            {QUICK_REACTIONS.map(reaction => (
+              <button
+                key={reaction}
+                type="button"
+                className="
+                  flex size-8 items-center justify-center
+                  rounded-full text-base transition-colors
+                  hover:bg-muted
+                "
+              >
+                {reaction}
               </button>
             ))}
           </div>
         )}
+
+        {/* BOTÓN REACCIONES */}
+        <button
+          type="button"
+          onClick={handleToggleReactions}
+          className={`
+            absolute top-1/2 z-10 hidden -translate-y-1/2
+            items-center justify-center rounded-full border
+            bg-background p-1.5 shadow-sm transition-opacity
+            group-hover:flex
+            ${reactionButtonPositionClasses}
+          `}
+        >
+          <Plus className="size-3 text-muted-foreground" />
+        </button>
+
+        {/* BURBUJA */}
+        <div
+          className={`
+            rounded-2xl px-4 py-2.5 shadow-sm
+            ${bubbleClasses}
+          `}
+        >
+          {/* MENSAJE */}
+          <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
+            {message.content}
+          </p>
+
+          {/* FOOTER */}
+          <div
+            className={`
+              mt-2 flex items-center justify-end gap-1.5 text-[11px]
+              ${footerClasses}
+            `}
+          >
+            <span>{formattedTime}</span>
+
+            {renderMessageStatus()}
+          </div>
+        </div>
       </div>
     </div>
   )

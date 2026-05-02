@@ -1,32 +1,37 @@
 import { useEffect } from 'react'
+
 import { authStorage } from '@/entities/auth/model/storage/auth-storage'
 import { useAuthStore } from '@/entities/auth/model/store/auth.store'
 import { getMe } from '@/entities/auth/api/auth.api'
 
 export function AuthHydrator() {
   const setUser = useAuthStore(s => s.setUser)
-  const clearUser = useAuthStore(s => s.clear)
+  const clear = useAuthStore(s => s.clear)
+  const setLoading = useAuthStore(s => s.setLoading)
 
   useEffect(() => {
     const token = authStorage.getToken()
 
     if (!token) {
-      clearUser()
+      clear()
       return
     }
 
-    const loadUser = async () => {
+    const hydrate = async () => {
       try {
         const user = await getMe()
+
         setUser(user)
       } catch {
         authStorage.clear()
-        clearUser()
+        clear()
+      } finally {
+        setLoading(false)
       }
     }
 
-    loadUser()
-  }, [setUser, clearUser])
+    hydrate()
+  }, [setUser, clear, setLoading])
 
   return null
 }

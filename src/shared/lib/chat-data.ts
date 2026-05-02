@@ -11,22 +11,6 @@ export interface Message {
   reactions: { emoji: string; count: number }[]
 }
 
-export interface Chat {
-  _id: string
-  name: string
-  avatar: string
-  avatarColor: string
-  lastMessage: string
-  time: string
-  unread: number
-  online: boolean
-  typing?: boolean
-  pinned?: boolean
-  muted?: boolean
-  messages: Message[]
-  category: 'all' | 'personal' | 'work' | 'group'
-}
-
 export interface Story {
   id: string
   name: string

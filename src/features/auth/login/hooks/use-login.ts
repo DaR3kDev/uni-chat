@@ -20,6 +20,8 @@ export function useLogin() {
 
       try {
         const user = await getMe()
+        authStorage.setUser(user)
+        console.log('User:', authStorage.setUser(user))
         setUser(user)
 
         navigate({ to: '/chat' })
@@ -30,7 +32,7 @@ export function useLogin() {
     },
 
     onError: error => {
-      const message = error.response?.data?.message ?? 'Error al iniciar sesión'
+      const message = error.response?.data?.Message ?? 'Error al iniciar sesión'
       console.error('Login error:', message)
       toast.error(message)
     },
