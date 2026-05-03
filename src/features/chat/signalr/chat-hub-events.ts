@@ -11,38 +11,27 @@ interface ChatHubEventsParams {
 }
 
 export function registerChatHubEvents({ connection, handlers }: ChatHubEventsParams) {
+  const handleReceiveMessage = (data: any) => {
+    if (data.type === 'TEXT') {
+      handlers.ReceiveTextMessage?.(data)
+    } else {
+      handlers.ReceiveFileMessage?.(data)
+    }
+  }
+
   connection.off('ReceiveMessage')
   connection.off('UserTyping')
   connection.off('UserJoined')
   connection.off('MessageDelivered')
+  connection.off('MessageRead')
 
-  connection.on('ReceiveMessage', data => {
-    console.log('📩 ReceiveMessage:', data)
+  connection.on('ReceiveMessage', handleReceiveMessage)
 
-    handlers.ReceiveMessage?.(data)
-  })
+  if (handlers.UserTyping) connection.on('UserTyping', handlers.UserTyping)
 
-  connection.on('UserTyping', data => {
-    console.log('⌨️ UserTyping:', data)
+  if (handlers.UserJoined) connection.on('UserJoined', handlers.UserJoined)
 
-    handlers.UserTyping?.(data)
-  })
+  if (handlers.MessageDelivered) connection.on('MessageDelivered', handlers.MessageDelivered)
 
-  connection.on('UserJoined', data => {
-    console.log('👤 UserJoined:', data)
-
-    handlers.UserJoined?.(data)
-  })
-
-  connection.on('MessageDelivered', data => {
-    console.log('✅ MessageDelivered:', data)
-
-    handlers.MessageDelivered?.(data)
-  })
-
-  connection.on('MessageRead', data => {
-    console.log('👁️ MessageRead:', data)
-
-    handlers.MessageRead?.(data)
-  })
+  if (handlers.MessageRead) connection.on('MessageRead', handlers.MessageRead)
 }

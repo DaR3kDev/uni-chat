@@ -6,12 +6,10 @@ export async function safeInvoke(
   ...args: unknown[]
 ) {
   if (!connection) {
-    console.warn(`[SignalR:${method}] sin conexión`)
     return
   }
 
   if (connection.state !== signalR.HubConnectionState.Connected) {
-    console.warn(`[SignalR:${method}] no está conectado`)
     return
   }
 

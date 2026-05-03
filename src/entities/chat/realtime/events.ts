@@ -11,6 +11,13 @@ export type MessageDeliveredEvent = {
   deliveredAt: string
 }
 
+export type MessageReadEvent = {
+  messageId: string
+  conversationId: string
+  userId: string
+  readAt: string
+}
+
 export type JoinedConversationEvent = {
   conversationId: string
   userId: string

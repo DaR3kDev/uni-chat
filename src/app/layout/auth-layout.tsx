@@ -7,14 +7,19 @@ interface AuthLayoutProps {
 
 export function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <div className="grid min-h-svh grid-cols-1 lg:grid-cols-2">
-      {/* LEFT */}
-      <section className="flex flex-col gap-6 p-4 sm:p-6 md:p-10">
+    <div className="grid min-h-svh grid-cols-1 lg:grid-cols-2 bg-background">
+      {/* LEFT - FORM */}
+      <section className="flex flex-col p-4 sm:p-6 md:p-10">
         {/* HEADER */}
         <header className="flex justify-center lg:justify-start">
-          <Link to="/" className="flex items-center gap-2 font-medium">
-            <img src="./img/logo.webp" alt="UniChat Logo" className="h-8 w-8 sm:h-10 sm:w-10" />
-            <span className="text-base sm:text-lg">Uni Chat</span>
+          <Link to="/" className="flex items-center gap-2 group transition">
+            <img
+              src="./img/logo.webp"
+              alt="UniChat Logo"
+              className="h-9 w-9 sm:h-10 sm:w-10 transition-transform group-hover:scale-105"
+            />
+
+            <span className="text-base sm:text-lg font-medium tracking-tight">UniChat</span>
           </Link>
         </header>
 
@@ -24,41 +29,41 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         </main>
       </section>
 
-      {/* RIGHT */}
-      <aside
-        className="relative hidden lg:flex items-center justify-center overflow-hidden
-        bg-gradient-to-br from-white via-zinc-100 to-white
-        dark:from-black dark:via-zinc-900 dark:to-black"
-      >
-        {/* AMBIENT LIGHTS */}
-        <div className="absolute inset-0 opacity-40 dark:opacity-30">
-          <div className="absolute top-20 left-20 size-3 rounded-full bg-violet-400 blur-xl animate-pulse" />
-          <div className="absolute bottom-24 right-24 size-4 rounded-full bg-purple-400 blur-xl animate-pulse" />
-          <div className="absolute top-1/2 left-1/3 size-2 rounded-full bg-fuchsia-400 blur-lg animate-pulse" />
+      {/* RIGHT - BRAND */}
+      <aside className="relative hidden lg:flex items-center justify-center overflow-hidden bg-muted/30">
+        {/* BACKGROUND GLOW SYSTEM */}
+        <div className="absolute inset-0 opacity-50">
+          <div className="absolute top-24 left-24 size-40 bg-violet-400/20 blur-3xl rounded-full animate-pulse" />
+          <div className="absolute bottom-24 right-24 size-56 bg-fuchsia-400/20 blur-3xl rounded-full animate-pulse" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 size-72 bg-purple-500/10 blur-3xl rounded-full" />
         </div>
 
-        {/* GLOW */}
-        <div className="absolute size-72 sm:size-96 rounded-full bg-violet-400/20 dark:bg-violet-600/30 blur-3xl animate-pulse" />
+        {/* SUBTLE GRID */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle,_rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:24px_24px] opacity-20" />
 
-        {/* BRAND */}
-        <div className="relative flex flex-col items-center gap-4 sm:gap-6 text-center">
+        {/* CONTENT */}
+        <div className="relative flex flex-col items-center text-center gap-6">
+          {/* LOGO */}
           <img
             src="./img/logo.webp"
             alt="UniChat Logo"
-            className="h-24 w-24 sm:h-32 sm:w-32 md:h-40 md:w-40 object-contain
-              dark:mix-blend-screen
-              drop-shadow-[0_0_30px_rgba(139,92,246,0.4)]
-              dark:drop-shadow-[0_0_50px_rgba(139,92,246,0.7)]
-              transition-transform duration-500 hover:scale-110"
+            className="
+              h-28 w-28 md:h-36 md:w-36
+              object-contain
+              transition-transform duration-500 hover:scale-110
+              drop-shadow-[0_0_40px_rgba(139,92,246,0.4)]
+            "
           />
 
-          <h1
-            className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-wide
-            bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500
-            bg-clip-text text-transparent"
-          >
+          {/* TITLE */}
+          <h1 className="text-3xl md:text-5xl font-semibold tracking-tight bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 bg-clip-text text-transparent">
             UniChat
           </h1>
+
+          {/* SUBTITLE */}
+          <p className="text-sm text-muted-foreground max-w-sm">
+            Chatea en tiempo real con una experiencia fluida, rápida y moderna.
+          </p>
         </div>
       </aside>
     </div>

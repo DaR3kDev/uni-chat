@@ -3,12 +3,14 @@ import type {
   TypingData,
   MessageDeliveredEvent,
   JoinedConversationEvent,
+  MessageReadEvent,
 } from '@/entities/chat/realtime/events'
 
 export interface ChatHubEvents {
-  ReceiveMessage: Message
+  ReceiveTextMessage: Message
+  ReceiveFileMessage: Message
   UserTyping: TypingData
   UserJoined: JoinedConversationEvent
   MessageDelivered: MessageDeliveredEvent
-  MessageRead: MessageDeliveredEvent
+  MessageRead: MessageReadEvent
 }

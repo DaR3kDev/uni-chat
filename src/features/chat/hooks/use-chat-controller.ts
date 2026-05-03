@@ -1,24 +1,33 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-
+import { useCallback, useRef, useState } from 'react'
 import { authStorage } from '@/entities/auth/model/storage/auth-storage'
-
 import type { Conversation } from '@/entities/conversation/types/conversation.types'
-
+import type { MessageType } from '@/entities/chat/domain/message'
 import { useChatHub } from './use-chat-hub'
 import { useMessages } from './use-messages'
+import { uploadFile } from '@/entities/chat/api/chat.api'
 
 interface UseChatControllerProps {
   conversation: Conversation | null
 }
 
+const createTempId = () =>
+  typeof crypto !== 'undefined' ? crypto.randomUUID() : `temp-${Date.now()}-${Math.random()}`
+
 export function useChatController({ conversation }: UseChatControllerProps) {
   const [messageInput, setMessageInput] = useState('')
+  const sendingRef = useRef(false)
 
   const userId = authStorage.getUserId()
-
   const conversationId = conversation?.conversationId
 
-  const { messages, loading, addMessage, addOptimisticMessage, markMessageAsRead } = useMessages({
+  const {
+    messages,
+    loading,
+    addMessage,
+    addOptimisticMessage,
+    addOptimisticFileMessage,
+    markMessageAsRead,
+  } = useMessages({
     conversationId,
     userId: userId!,
   })
@@ -26,64 +35,72 @@ export function useChatController({ conversation }: UseChatControllerProps) {
   const { invoke } = useChatHub({
     conversationId,
 
-    onReceiveMessage: async incomingMessage => {
-      if (!conversationId || incomingMessage.conversationId !== conversationId) {
-        return
-      }
-
-      addMessage(incomingMessage)
-
-      try {
-        await invoke('MessageDelivered', incomingMessage.id, incomingMessage.conversationId)
-      } catch (error) {
-        console.error(error)
-      }
+    onReceiveTextMessage: msg => {
+      if (!conversationId || msg.conversationId !== conversationId) return
+      addMessage(msg)
     },
 
-    onMessageRead: data => {
-      markMessageAsRead(data.messageId)
+    onReceiveFileMessage: msg => {
+      if (!conversationId || msg.conversationId !== conversationId) return
+      addMessage(msg)
     },
+
+    onMessageRead: data => markMessageAsRead(data.messageId),
   })
 
-  const unreadMessages = useMemo(() => {
-    return messages.filter(message => message.senderId !== userId && message.status !== 'read')
-  }, [messages, userId])
+  const sendMessage = useCallback(async () => {
+    if (!conversationId || !messageInput.trim()) return
+    if (sendingRef.current) return
 
-  useEffect(() => {
-    async function markAsRead() {
-      if (!conversationId || unreadMessages.length === 0) {
-        return
-      }
+    sendingRef.current = true
+
+    const content = messageInput.trim()
+    setMessageInput('')
+
+    const tempId = createTempId()
+
+    // 👉 optimistic
+    addOptimisticMessage({
+      id: tempId,
+      content,
+    })
+
+    try {
+      await invoke('SendMessage', conversationId, content, null, null, 'TEXT')
+    } catch (err) {
+      console.error(err)
+    } finally {
+      sendingRef.current = false
+    }
+  }, [conversationId, messageInput, invoke, addOptimisticMessage])
+
+  const sendFile = useCallback(
+    async (file: File) => {
+      if (!conversationId) return
+
+      const tempId = createTempId()
+
+      const type: MessageType = file.type.startsWith('image/')
+        ? 'IMAGE'
+        : file.type.startsWith('video/')
+          ? 'VIDEO'
+          : file.type.startsWith('audio/')
+            ? 'AUDIO'
+            : 'FILE'
+
+      addOptimisticFileMessage(tempId, file.name, type)
 
       try {
-        await Promise.all(
-          unreadMessages.map(message => invoke('MessageRead', message.id, conversationId)),
-        )
+        const fileUrl = await uploadFile(file)
+        if (!fileUrl) throw new Error('upload failed')
+
+        await invoke('SendMessage', conversationId, null, fileUrl, file.name, type)
       } catch (error) {
         console.error(error)
       }
-    }
-
-    void markAsRead()
-  }, [conversationId, invoke, unreadMessages])
-
-  const sendMessage = useCallback(async () => {
-    if (!conversationId || !messageInput.trim()) {
-      return
-    }
-
-    const content = messageInput.trim()
-
-    setMessageInput('')
-
-    addOptimisticMessage(content)
-
-    try {
-      await invoke('SendMessage', conversationId, content)
-    } catch (error) {
-      console.error(error)
-    }
-  }, [addOptimisticMessage, conversationId, invoke, messageInput])
+    },
+    [conversationId, invoke, addOptimisticFileMessage],
+  )
 
   return {
     messages,
@@ -91,6 +108,7 @@ export function useChatController({ conversation }: UseChatControllerProps) {
     messageInput,
     setMessageInput,
     sendMessage,
+    sendFile,
     userId,
   }
 }

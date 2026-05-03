@@ -10,11 +10,11 @@ export function HeroSection() {
   ]
 
   return (
-    <section className="relative overflow-hidden pt-24 pb-16 sm:pt-28 sm:pb-20 lg:pt-36 lg:pb-28">
-      {/* Background */}
+    <section className="relative overflow-hidden pt-24 pb-20 sm:pt-28 lg:pt-36">
+      {/* Background mejor controlado */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-0 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl sm:h-[500px] sm:w-[500px]" />
-        <div className="absolute right-0 top-1/2 h-[250px] w-[250px] rounded-full bg-primary/5 blur-3xl sm:h-[300px] sm:w-[300px]" />
+        <div className="absolute left-1/2 top-0 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute right-10 top-1/2 h-[300px] w-[300px] rounded-full bg-primary/5 blur-3xl" />
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -23,10 +23,9 @@ export function HeroSection() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs text-primary sm:text-sm"
+            className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs text-primary backdrop-blur"
           >
-            <Lock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <Lock className="h-3.5 w-3.5" />
             Cifrado de extremo a extremo
           </motion.div>
 
@@ -34,8 +33,7 @@ export function HeroSection() {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-6xl"
+            className="mt-5 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl"
           >
             Privacidad en cada <span className="text-primary">mensaje</span>
           </motion.h1>
@@ -43,51 +41,35 @@ export function HeroSection() {
           {/* Description */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mx-auto mt-4 max-w-xl text-base text-muted-foreground sm:mt-6 sm:text-lg lg:text-xl"
+            className="mx-auto mt-5 max-w-xl text-base text-muted-foreground sm:text-lg"
           >
-            SecureChat protege tus conversaciones con cifrado de extremo a extremo. Ni nosotros
-            podemos leer tus mensajes. Tu privacidad es nuestra prioridad.
+            SecureChat protege tus conversaciones con cifrado de extremo a extremo. Ni siquiera
+            nosotros podemos leer tus mensajes.
           </motion.p>
 
-          {/* Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:justify-center"
-          >
+          {/* CTA */}
+          <motion.div initial={{ opacity: 0, y: 20 }} className="mt-8 flex justify-center">
             <Button
               size="lg"
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:scale-[1.03] active:scale-[0.97] sm:w-auto"
+              className="group rounded-2xl px-6 transition-all hover:scale-[1.03] active:scale-95"
             >
-              Descargar Ahora
-              <ArrowRight className="ml-2 h-4 w-4" />
+              Descargar ahora
+              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
           </motion.div>
 
-          {/* Stats */}
-          <div className="mt-12 grid grid-cols-3 gap-4 sm:mt-16 sm:gap-8">
-            {stats.map((stat, index) => (
+          {/* Stats mejor UI cards */}
+          <div className="mt-14 grid grid-cols-3 gap-3 sm:gap-6">
+            {stats.map((stat, i) => (
               <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
+                key={i}
+                initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 + index * 0.1 }}
-                className="flex flex-col items-center gap-1 sm:gap-2"
+                className="rounded-2xl border border-border/60 bg-card/40 p-4 backdrop-blur transition hover:-translate-y-1 hover:bg-card"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 sm:h-12 sm:w-12">
-                  <stat.icon className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
-                </div>
-
-                <span className="text-lg font-semibold text-foreground sm:text-2xl">
-                  {stat.value}
-                </span>
-
-                <span className="text-xs text-muted-foreground sm:text-sm text-center">
-                  {stat.label}
-                </span>
+                <stat.icon className="mx-auto h-5 w-5 text-primary" />
+                <div className="mt-2 text-lg font-semibold">{stat.value}</div>
+                <div className="text-xs text-muted-foreground">{stat.label}</div>
               </motion.div>
             ))}
           </div>

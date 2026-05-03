@@ -17,19 +17,27 @@ export function AddContactDialog() {
 
   return (
     <TooltipProvider>
-      <Tooltip>
+      <Tooltip delayDuration={200}>
         <TooltipTrigger asChild>
           <Button
             onClick={handleOpenDialog}
             variant="ghost"
-            size="sm"
+            size="icon"
             aria-label="Agregar contacto"
+            className="
+              h-8 w-8 rounded-full
+              hover:bg-muted/60
+              transition
+              active:scale-95
+            "
           >
-            <UserPlus className="size-4" />
+            <UserPlus className="h-4 w-4 text-muted-foreground" />
           </Button>
         </TooltipTrigger>
 
-        <TooltipContent>Nuevo contacto</TooltipContent>
+        <TooltipContent side="bottom" className="text-xs px-2 py-1">
+          Nuevo contacto
+        </TooltipContent>
       </Tooltip>
     </TooltipProvider>
   )

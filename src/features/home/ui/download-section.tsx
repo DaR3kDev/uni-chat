@@ -31,56 +31,85 @@ const platforms = [
 
 export function DownloadSection() {
   return (
-    <section id="download" className="bg-card py-20 lg:py-32">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+    <section id="download" className="relative py-24 lg:py-32 overflow-hidden">
+      <div className="relative mx-auto max-w-7xl px-6">
+        {/* HEADER */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 25 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
           className="mx-auto max-w-3xl text-center"
         >
-          <span className="text-sm font-medium uppercase tracking-wider text-primary">
-            Descargar
+          <span className="text-xs font-semibold tracking-widest uppercase text-primary">
+            Descargas
           </span>
 
-          <h2 className="mt-4 text-balance text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl">
-            Disponible en todas las plataformas
+          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight">
+            Disponible en cualquier dispositivo
           </h2>
 
-          <p className="mt-4 text-pretty text-muted-foreground lg:text-lg">
-            Sincroniza tus conversaciones en todos tus dispositivos de forma segura. Comienza en tu
-            teléfono y continúa en tu computadora.
+          <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
+            Sincroniza tus mensajes en tiempo real. Empieza en tu móvil y continúa en tu computadora
+            sin perder nada.
           </p>
         </motion.div>
 
-        {/* Cards */}
+        {/* GRID */}
         <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {platforms.map((platform, i) => (
             <motion.div
               key={platform.name}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 25 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="group flex flex-col items-center rounded-2xl border border-border bg-background p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary/50"
+              transition={{ delay: i * 0.08 }}
+              className="
+                group relative
+                rounded-2xl
+                border border-border/60
+                bg-background/60 backdrop-blur
+                p-7 text-center
+                shadow-sm
+                transition-all
+                hover:-translate-y-1 hover:shadow-xl hover:border-primary/40
+              "
             >
-              {/* Icon */}
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:scale-105">
-                <platform.icon className="h-8 w-8" />
+              {/* inner glow */}
+              <div className="absolute inset-0 rounded-2xl opacity-0 transition group-hover:opacity-100 bg-primary/5" />
+
+              {/* ICON */}
+              <div
+                className="
+                  relative mx-auto mb-4 flex h-14 w-14 items-center justify-center
+                  rounded-2xl
+                  bg-primary/10 text-primary
+                  transition-all
+                  group-hover:bg-primary group-hover:text-primary-foreground
+                  group-hover:scale-105
+                "
+              >
+                <platform.icon className="h-6 w-6" />
               </div>
 
-              {/* Title */}
-              <h3 className="text-lg font-semibold text-foreground">{platform.name}</h3>
+              {/* TITLE */}
+              <h3 className="text-base font-semibold">{platform.name}</h3>
 
-              {/* Description */}
+              {/* DESC */}
               <p className="mt-1 text-sm text-muted-foreground">{platform.description}</p>
 
-              {/* Button */}
+              {/* BUTTON */}
               <Button
                 variant="outline"
-                className="mt-6 w-full border-border text-foreground transition-all duration-200 hover:bg-primary hover:text-primary-foreground hover:border-primary hover:scale-[1.02] active:scale-[0.97]"
+                className="
+                  mt-6 w-full
+                  border-border/60
+                  bg-background/40 backdrop-blur
+                  transition-all
+                  hover:bg-primary hover:text-primary-foreground
+                  hover:border-primary
+                  hover:scale-[1.03]
+                  active:scale-[0.97]
+                "
               >
                 {platform.button}
               </Button>

@@ -14,37 +14,50 @@ export function LoginForm() {
 
   const { control, handleSubmit } = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      phone: '',
-    },
+    defaultValues: { phone: '' },
   })
 
   const onSubmit = (data: LoginSchema) => mutate(data)
 
   return (
-    <form className="w-full max-w-md mx-auto px-4 sm:px-0" onSubmit={handleSubmit(onSubmit)}>
-      <FieldGroup className="space-y-6 w-full">
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-md mx-auto px-4">
+      <FieldGroup className="space-y-7 w-full">
         {/* HEADER */}
-        <div className="text-center space-y-1">
-          <h1 className="text-lg sm:text-xl md:text-2xl font-bold">Iniciar sesión</h1>
-          <p className="text-xs sm:text-sm text-muted-foreground">Ingresa tu número de teléfono</p>
+        <div className="text-center space-y-2">
+          <div className="mx-auto w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+            <span className="text-primary text-lg font-bold">U</span>
+          </div>
+
+          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">Iniciar sesión</h1>
+
+          <p className="text-sm text-muted-foreground">
+            Ingresa tu número de teléfono para continuar
+          </p>
         </div>
 
         {/* PHONE */}
-        <Field className="space-y-2 w-full">
-          <FieldLabel>Teléfono</FieldLabel>
+        <Field className="space-y-2">
+          <FieldLabel className="text-xs text-muted-foreground">Número de teléfono</FieldLabel>
 
           <Controller
             name="phone"
             control={control}
             render={({ field }) => (
-              <div className="phone-wrapper">
+              <div
+                className="
+                  rounded-xl border bg-background
+                  px-3 py-2
+                  transition
+                  focus-within:ring-2 focus-within:ring-primary/30
+                  hover:border-muted-foreground/40
+                "
+              >
                 <PhoneInput
                   {...field}
                   defaultCountry="CO"
                   international
                   countryCallingCodeEditable={false}
-                  className="phone-input"
+                  className="w-full bg-transparent text-sm outline-none"
                 />
               </div>
             )}
@@ -54,16 +67,22 @@ export function LoginForm() {
         {/* BUTTON */}
         <Button
           type="submit"
-          className="w-full h-11 sm:h-12 text-sm sm:text-base"
           disabled={isPending}
+          className="
+            w-full h-11
+            rounded-xl
+            font-medium
+            transition
+            active:scale-[0.98]
+          "
         >
           {isPending ? 'Enviando...' : 'Continuar'}
         </Button>
 
-        {/* REGISTER LINK */}
-        <div className="text-center text-xs sm:text-sm text-muted-foreground">
+        {/* FOOTER */}
+        <div className="text-center text-sm text-muted-foreground">
           ¿No tienes cuenta?{' '}
-          <Link to="/register" className="text-primary font-medium hover:underline">
+          <Link to="/register" className="text-primary font-medium hover:underline transition">
             Regístrate
           </Link>
         </div>

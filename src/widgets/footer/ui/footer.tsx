@@ -24,31 +24,36 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-background">
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
+    <footer className="relative border-t border-border/60 bg-background">
+      {/* glow suave */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-primary/5 via-transparent to-transparent" />
+
+      <div className="mx-auto max-w-6xl px-6 py-14 sm:py-20">
         {/* TOP */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4"
+          className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4"
         >
-          {/* Brand */}
-          <div className="space-y-4 sm:col-span-2 lg:col-span-1">
-            <Link to="/" className="flex items-center gap-2">
-              <Shield className="h-6 w-6 text-primary" />
-              <span className="text-base font-semibold text-foreground">UniChat</span>
+          {/* BRAND */}
+          <div className="space-y-5 sm:col-span-2 lg:col-span-1">
+            <Link to="/" className="flex items-center gap-2 transition hover:opacity-80">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Shield className="h-5 w-5" />
+              </div>
+              <span className="text-lg font-semibold tracking-tight">UniChat</span>
             </Link>
 
-            <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-              Mensajería privada y segura. Tu privacidad es lo primero.
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Mensajería privada y segura. Diseñada para comunicación rápida, ligera y protegida.
             </p>
           </div>
 
-          {/* Links */}
+          {/* LINKS */}
           {Object.entries(footerLinks).map(([title, links]) => (
-            <div key={title} className="space-y-3">
-              <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">
+            <div key={title} className="space-y-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
                 {title}
               </h3>
 
@@ -57,7 +62,13 @@ export function Footer() {
                   <li key={link.name}>
                     <Link
                       to={link.href}
-                      className="text-sm text-foreground/70 transition-colors duration-200 hover:text-foreground"
+                      className="
+                        text-sm text-muted-foreground
+                        transition
+                        hover:text-foreground
+                        hover:translate-x-0.5
+                        inline-block
+                      "
                     >
                       {link.name}
                     </Link>
@@ -68,12 +79,16 @@ export function Footer() {
           ))}
         </motion.div>
 
+        {/* DIVIDER */}
+        <div className="my-10 h-px w-full bg-border/60" />
+
         {/* BOTTOM */}
-        <div className="mt-12 border-t border-border pt-6">
-          <div className="flex flex-col items-center gap-2 text-center text-xs text-muted-foreground sm:flex-row sm:justify-between sm:text-left">
-            <span>© {new Date().getFullYear()} UniChat</span>
-            <span className="opacity-80">Hecho con privacidad en mente</span>
-          </div>
+        <div className="flex flex-col gap-3 text-center text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:text-left">
+          <span>© {new Date().getFullYear()} UniChat</span>
+
+          <span className="flex items-center justify-center gap-1 opacity-80">
+            Hecho con <span className="text-primary">❤</span> por privacidad
+          </span>
         </div>
       </div>
     </footer>

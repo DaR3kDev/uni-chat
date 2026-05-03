@@ -7,7 +7,7 @@ import { AddContactDialog } from '@/features/contacts/add-contact/ui/add-contact
 import { ContactListDialog } from '@/features/contacts/list-contacts/ui/contact-list-dialog'
 import { InfoUserDialog } from '@/features/settings/ui/info-user-panel'
 
-import { FiltersComponents } from '@/features/filters/components/filters-components'
+import { FiltersComponents } from '@/features/filters/ui/filters-components'
 import { ConversationPreviewItem } from '@/features/contacts/list-contacts/ui/conversation-preview-item'
 
 import type { Conversation } from '@/entities/conversation/types/conversation.types'
@@ -24,11 +24,10 @@ export default function ChatSidebar({ onSelectConversation }: ChatSidebarProps) 
   const { data: conversations = [] } = useConversations()
 
   const filteredConversations = useMemo(() => {
-    const query = search.trim().toLowerCase()
+    const q = search.trim().toLowerCase()
+    if (!q) return conversations
 
-    if (!query) return conversations
-
-    return conversations.filter(c => c.username?.toLowerCase().includes(query))
+    return conversations.filter(c => c.username?.toLowerCase().includes(q))
   }, [conversations, search])
 
   const handleSelectConversation = useCallback(
@@ -40,19 +39,19 @@ export default function ChatSidebar({ onSelectConversation }: ChatSidebarProps) 
   )
 
   return (
-    <aside className="flex h-full w-full flex-col overflow-hidden bg-card">
+    <aside className="flex h-full flex-col bg-background border-r">
       {/* HEADER */}
-      <header className="flex items-center justify-between border-b border-border/40 px-4 py-3">
-        <div className="flex items-center gap-3">
-          <img src="./img/logo.webp" alt="UniChat Logo" className="h-10 w-10 object-contain" />
+      <header className="flex items-center justify-between px-3 py-3 border-b bg-background/70 backdrop-blur">
+        <div className="flex items-center gap-2">
+          <img src="./img/logo.webp" alt="UniChat" className="h-9 w-9 object-contain" />
 
           <div className="leading-tight">
-            <h1 className="text-lg font-semibold text-card-foreground">UniChat</h1>
-            <p className="text-xs text-muted-foreground">Mensajes</p>
+            <h1 className="text-sm font-semibold">UniChat</h1>
+            <p className="text-[11px] text-muted-foreground">Mensajes</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <ContactListDialog />
           <AddContactDialog />
           <InfoUserDialog />
@@ -60,14 +59,14 @@ export default function ChatSidebar({ onSelectConversation }: ChatSidebarProps) 
       </header>
 
       {/* SEARCH */}
-      <div className="px-4 py-3">
-        <div className="flex items-center gap-2 rounded-xl bg-secondary px-3 py-2">
-          <Search className="size-4 text-muted-foreground" />
+      <div className="px-3 py-2">
+        <div className="flex items-center gap-2 rounded-xl bg-muted/40 px-3 py-2 focus-within:ring-2 focus-within:ring-primary/20 transition">
+          <Search className="h-4 w-4 text-muted-foreground" />
 
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Buscar conversaciones..."
+            placeholder="Buscar chats..."
             className="w-full bg-transparent text-sm outline-none"
           />
         </div>
@@ -78,12 +77,12 @@ export default function ChatSidebar({ onSelectConversation }: ChatSidebarProps) 
         <FiltersComponents />
       </div>
 
-      {/* CONVERSATIONS */}
+      {/* LISTA */}
       <ScrollArea className="flex-1 min-h-0">
-        <div className="space-y-1 p-2">
+        <div className="p-2 space-y-1">
           {filteredConversations.length === 0 ? (
-            <div className="flex min-h-[200px] items-center justify-center">
-              <p className="text-sm text-muted-foreground">No hay conversaciones</p>
+            <div className="flex h-[200px] items-center justify-center text-sm text-muted-foreground">
+              No hay conversaciones
             </div>
           ) : (
             filteredConversations.map(conversation => (

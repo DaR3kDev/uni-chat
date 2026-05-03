@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
-
 import { getMessages } from '@/entities/chat/api/chat.api'
 import type { Message } from '@/entities/chat/domain/message'
-import type { UseMessagesProps, UseMessagesReturn } from '../types/use-messages.types'
 
-export function useMessages({ conversationId, userId }: UseMessagesProps): UseMessagesReturn {
+interface Props {
+  conversationId?: string
+  userId: string
+}
+
+export function useMessages({ conversationId, userId }: Props) {
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -12,110 +15,93 @@ export function useMessages({ conversationId, userId }: UseMessagesProps): UseMe
     setMessages([])
   }, [])
 
+  const mapMessage = useCallback((m: any): Message => {
+    return {
+      id: m.messageId,
+      conversationId: m.conversationId,
+      senderId: m.senderId,
+      content: m.content,
+      fileUrl: m.fileUrl,
+      fileName: m.fileName,
+      createdAt: m.createdAt,
+      type: m.type,
+    }
+  }, [])
+
   const loadMessages = useCallback(async () => {
     if (!conversationId) {
       clearMessages()
-
       return
     }
 
     setLoading(true)
 
     try {
-      const fetchedMessages = await getMessages(conversationId)
-
-      setMessages(fetchedMessages)
-    } catch (error) {
-      console.error('Error loading messages:', error)
+      const data = await getMessages(conversationId)
+      setMessages(data.map(mapMessage))
+    } catch (e) {
+      console.error(e)
     } finally {
       setLoading(false)
     }
-  }, [clearMessages, conversationId])
+  }, [conversationId, clearMessages, mapMessage])
+
+  // ⚡ optimizado sin duplicados + sin re-render innecesario
+  const addMessage = useCallback((msg: Message) => {
+    setMessages(prev => {
+      if (prev.some(m => m.id === msg.id)) return prev
+
+      return [...prev, { ...msg, status: 'sent' }]
+    })
+  }, [])
+
+  const addOptimisticMessage = useCallback((msg: Partial<Message>) => {
+    setMessages(prev => [
+      ...prev,
+      {
+        id: msg.id!,
+        conversationId: '',
+        senderId: userId,
+        content: msg.content,
+        createdAt: new Date().toISOString(),
+        type: 'TEXT',
+      },
+    ])
+  }, [])
+
+  const addOptimisticFileMessage = useCallback(
+    (id: string, fileName: string, type: Message['type']) => {
+      setMessages(prev => [
+        ...prev,
+        {
+          id,
+          conversationId: '',
+          senderId: userId,
+          fileName,
+          fileUrl: '',
+          type,
+          createdAt: new Date().toISOString(),
+          status: 'sending',
+        },
+      ])
+    },
+    [userId],
+  )
+
+  const markMessageAsRead = useCallback((messageId: string) => {
+    setMessages(prev => prev.map(m => (m.id === messageId ? { ...m, status: 'read' } : m)))
+  }, [])
 
   useEffect(() => {
     void loadMessages()
   }, [loadMessages])
-
-  const addMessage = useCallback((incomingMessage: Message) => {
-    setMessages(previousMessages => {
-      const messageExists = previousMessages.some(message => message.id === incomingMessage.id)
-
-      if (messageExists) {
-        return previousMessages
-      }
-
-      const optimisticMessage = previousMessages.find(
-        message =>
-          message.status === 'sending' &&
-          message.content === incomingMessage.content &&
-          message.senderId === incomingMessage.senderId,
-      )
-
-      if (optimisticMessage) {
-        return previousMessages.map(message =>
-          message.id === optimisticMessage.id
-            ? {
-                ...incomingMessage,
-                status: 'sent',
-              }
-            : message,
-        )
-      }
-
-      return [
-        ...previousMessages,
-        {
-          ...incomingMessage,
-          status: 'sent',
-        },
-      ]
-    })
-  }, [])
-
-  const createOptimisticMessage = useCallback(
-    (content: string): Message => ({
-      id: `temp-${Date.now()}`,
-      conversationId: conversationId ?? '',
-      senderId: userId,
-      content,
-      createdAt: new Date().toISOString(),
-      type: 'text',
-      status: 'sending',
-    }),
-    [conversationId, userId],
-  )
-
-  const addOptimisticMessage = useCallback(
-    (content: string) => {
-      if (!conversationId) {
-        return
-      }
-
-      const optimisticMessage = createOptimisticMessage(content)
-
-      setMessages(previousMessages => [...previousMessages, optimisticMessage])
-    },
-    [conversationId, createOptimisticMessage],
-  )
-
-  const markMessageAsRead = useCallback((messageId: string) => {
-    setMessages(previousMessages =>
-      previousMessages.map(message =>
-        message.id === messageId
-          ? {
-              ...message,
-              status: 'read',
-            }
-          : message,
-      ),
-    )
-  }, [])
 
   return {
     messages,
     loading,
     addMessage,
     addOptimisticMessage,
+    addOptimisticFileMessage,
     markMessageAsRead,
     reloadMessages: loadMessages,
   }

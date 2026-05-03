@@ -16,14 +16,27 @@ export function ContactListDialog() {
 
   return (
     <TooltipProvider>
-      <Tooltip>
+      <Tooltip delayDuration={200}>
         <TooltipTrigger asChild>
-          <Button onClick={handleOpenDialog} variant="ghost" size="sm" aria-label="Abrir contactos">
-            <BookOpen className="size-4" />
+          <Button
+            onClick={handleOpenDialog}
+            variant="ghost"
+            size="icon"
+            aria-label="Contactos"
+            className="
+              h-8 w-8 rounded-full
+              hover:bg-muted/60
+              transition
+              active:scale-95
+            "
+          >
+            <BookOpen className="h-4 w-4 text-muted-foreground" />
           </Button>
         </TooltipTrigger>
 
-        <TooltipContent>Contactos</TooltipContent>
+        <TooltipContent side="bottom" className="text-xs px-2 py-1">
+          Contactos
+        </TooltipContent>
       </Tooltip>
     </TooltipProvider>
   )

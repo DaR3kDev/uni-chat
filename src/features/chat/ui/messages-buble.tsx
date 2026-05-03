@@ -1,10 +1,25 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
+import { Paperclip, Plus } from 'lucide-react'
 
-import { Check, CheckCheck, Clock3, Plus, TriangleAlert } from 'lucide-react'
+import type { Message, MessageType } from '@/entities/chat/domain/message'
+import { VoiceNoteMessage } from './voice-note-message'
 
-import type { Message } from '@/entities/chat/domain/message'
+import { Button } from '@/shared/ui/button'
 
-const QUICK_REACTIONS = ['❤️', '👍', '😂', '🔥', '😍', '👏', '😎', '😮', '😭', '🎉', '🙏', '🤝']
+const QUICK_REACTIONS = [
+  '❤️',
+  '👍',
+  '😂',
+  '🔥',
+  '😍',
+  '👏',
+  '😎',
+  '😮',
+  '😭',
+  '🎉',
+  '🙏',
+  '🤝',
+] as const
 
 interface MessageBubbleProps {
   message: Message
@@ -12,120 +27,129 @@ interface MessageBubbleProps {
 }
 
 export function MessageBubble({ message, isMine }: MessageBubbleProps) {
-  const [isReactionPickerOpen, setIsReactionPickerOpen] = useState(false)
+  const [showReactions, setShowReactions] = useState(false)
+  const formattedTime = useMemo(
+    () =>
+      new Date(message.createdAt).toLocaleTimeString('es-CO', {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+    [message.createdAt],
+  )
 
-  const formattedTime = useMemo(() => {
-    return new Date(message.createdAt).toLocaleTimeString('es-CO', {
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }, [message.createdAt])
+  const renderers: Record<MessageType, (msg: Message) => ReactNode> = {
+    TEXT: msg => (
+      <p className="text-[13px] sm:text-sm whitespace-pre-wrap break-words leading-snug">
+        {msg.content}
+      </p>
+    ),
 
-  const bubbleClasses = isMine
-    ? 'bg-primary text-primary-foreground rounded-br-md'
-    : 'bg-background border text-foreground rounded-bl-md'
+    IMAGE: msg => (
+      <img
+        src={msg.fileUrl}
+        loading="lazy"
+        className="rounded-xl w-full max-w-[220px] sm:max-w-[280px] object-cover"
+      />
+    ),
 
-  const footerClasses = isMine ? 'text-primary-foreground/70' : 'text-muted-foreground'
+    VIDEO: msg => (
+      <video
+        controls
+        src={msg.fileUrl}
+        className="rounded-xl w-full max-w-[220px] sm:max-w-[300px]"
+      />
+    ),
 
-  const reactionPositionClasses = isMine ? 'right-0' : 'left-0'
+    AUDIO: msg => <VoiceNoteMessage url={msg.fileUrl || ''} isMine={isMine} size="x1_5" />,
 
-  const reactionButtonPositionClasses = isMine ? '-left-10' : '-right-10'
-
-  function handleToggleReactions() {
-    setIsReactionPickerOpen(previous => !previous)
-  }
-
-  function renderMessageStatus() {
-    if (!isMine) {
-      return null
-    }
-
-    switch (message.status) {
-      case 'sending':
-        return <Clock3 className="size-3 text-yellow-400" />
-
-      case 'sent':
-        return <Check className="size-3 text-muted-foreground" />
-
-      case 'delivered':
-        return <CheckCheck className="size-3 text-muted-foreground" />
-
-      case 'read':
-        return <CheckCheck className="size-3 text-sky-400" />
-
-      case 'error':
-        return <TriangleAlert className="size-3 text-red-400" />
-
-      default:
-        return null
-    }
+    FILE: msg => (
+      <a
+        href={msg.fileUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="text-[13px] sm:text-sm underline break-all opacity-90 hover:opacity-100"
+      >
+        <Paperclip className="h-4 w-4 mr-1 inline" />
+        {msg.fileName || 'Archivo'}
+      </a>
+    ),
   }
 
   return (
-    <div className={`group flex w-full ${isMine ? 'justify-end' : 'justify-start'}`}>
-      <div className="relative max-w-[82%]">
-        {/* SELECTOR DE REACCIONES */}
-        {isReactionPickerOpen && (
+    <div
+      className={`
+        flex w-full mb-1
+        ${isMine ? 'justify-end' : 'justify-start'}
+      `}
+    >
+      {/* BUBBLE WRAPPER RESPONSIVE */}
+      <div
+        className={`
+          relative group
+
+          w-fit
+          max-w-[85%] sm:max-w-[75%] lg:max-w-[65%]
+        `}
+      >
+        {/* REACTION BUTTON */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setShowReactions(v => !v)}
+          className={`
+            absolute top-1/2 -translate-y-1/2
+            ${isMine ? '-left-7 sm:-left-8' : '-right-7 sm:-right-8'}
+            opacity-0 group-hover:opacity-100
+            transition
+            h-6 w-6 sm:h-7 sm:w-7
+            rounded-full
+          `}
+        >
+          <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+        </Button>
+
+        {/* REACTIONS */}
+        {showReactions && (
           <div
             className={`
-              absolute -top-14 z-20 flex flex-wrap items-center gap-1
-              rounded-2xl border bg-background/95 p-2 shadow-xl backdrop-blur
-              ${reactionPositionClasses}
+              absolute -top-9 sm:-top-10 z-20
+              flex gap-1
+              px-2 py-[2px] sm:py-1
+              bg-background/90 backdrop-blur-md
+              border rounded-full shadow-sm
+              ${isMine ? 'right-0' : 'left-0'}
             `}
           >
-            {QUICK_REACTIONS.map(reaction => (
-              <button
-                key={reaction}
-                type="button"
-                className="
-                  flex size-8 items-center justify-center
-                  rounded-full text-base transition-colors
-                  hover:bg-muted
-                "
-              >
-                {reaction}
+            {QUICK_REACTIONS.map(r => (
+              <button key={r} className="text-xs sm:text-sm hover:scale-110 transition">
+                {r}
               </button>
             ))}
           </div>
         )}
 
-        {/* BOTÓN REACCIONES */}
-        <button
-          type="button"
-          onClick={handleToggleReactions}
-          className={`
-            absolute top-1/2 z-10 hidden -translate-y-1/2
-            items-center justify-center rounded-full border
-            bg-background p-1.5 shadow-sm transition-opacity
-            group-hover:flex
-            ${reactionButtonPositionClasses}
-          `}
-        >
-          <Plus className="size-3 text-muted-foreground" />
-        </button>
-
-        {/* BURBUJA */}
+        {/* BUBBLE RESPONSIVE */}
         <div
           className={`
-            rounded-2xl px-4 py-2.5 shadow-sm
-            ${bubbleClasses}
+            flex flex-col gap-1
+            px-2.5 py-1.5 sm:px-3 sm:py-2
+            rounded-xl sm:rounded-2xl
+            border shadow-sm
+            transition
+
+            ${
+              isMine
+                ? 'ml-auto bg-primary/10 border-primary/20 rounded-br-md'
+                : 'mr-auto bg-muted/40 border-border rounded-bl-md'
+            }
           `}
         >
-          {/* MENSAJE */}
-          <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
-            {message.content}
-          </p>
+          {/* CONTENT */}
+          <div className="break-words leading-snug">{renderers[message.type](message)}</div>
 
           {/* FOOTER */}
-          <div
-            className={`
-              mt-2 flex items-center justify-end gap-1.5 text-[11px]
-              ${footerClasses}
-            `}
-          >
+          <div className="flex items-center justify-end gap-1 text-[9.5px] sm:text-[10px] opacity-70">
             <span>{formattedTime}</span>
-
-            {renderMessageStatus()}
           </div>
         </div>
       </div>

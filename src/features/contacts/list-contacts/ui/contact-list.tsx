@@ -13,7 +13,6 @@ interface ContactListProps {
 
 export function ContactList({ contacts }: ContactListProps) {
   const navigate = useNavigate()
-
   const closeDialog = useDialogStore(s => s.closeDialog)
   const { mutate: createConversation } = useCreateDirectConversation()
 
@@ -40,16 +39,26 @@ export function ContactList({ contacts }: ContactListProps) {
 
   if (!contacts.length) {
     return (
-      <div className="flex min-h-[200px] flex-col items-center justify-center text-center">
-        <p className="text-sm text-muted-foreground">No hay contactos</p>
+      <div className="flex min-h-[220px] flex-col items-center justify-center gap-2 text-center">
+        <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+          <span className="text-xs">👥</span>
+        </div>
+
+        <p className="text-sm font-medium text-muted-foreground">No hay contactos</p>
+
+        <span className="text-xs text-muted-foreground">
+          Agrega personas para empezar a chatear
+        </span>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col gap-1 pb-4">
+    <div className="flex flex-col gap-1 pb-3">
       {contacts.map(contact => (
-        <ContactItem key={contact.id} contact={contact} onStartChat={handleStartChat} />
+        <div key={contact.id} className="transition active:scale-[0.99]">
+          <ContactItem contact={contact} onStartChat={handleStartChat} />
+        </div>
       ))}
     </div>
   )

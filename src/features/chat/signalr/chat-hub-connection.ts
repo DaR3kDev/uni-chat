@@ -1,4 +1,3 @@
-// chatHubConnection.ts
 import * as signalR from '@microsoft/signalr'
 import { authStorage } from '@/entities/auth/model/storage/auth-storage'
 

@@ -1,16 +1,12 @@
 import { MoreVertical, Trash2, Users } from 'lucide-react'
 
 import { DropdownGeneric } from '@/widgets/dropdwn/ui/dropdwn-generic'
-
 import type { Conversation } from '@/entities/conversation/types/conversation.types'
 
 interface ConversationPreviewItemProps {
   conversation: Conversation
-
   active?: boolean
-
   onSelect: () => void
-
   onDeleteConversation: (conversationId: string) => void
 }
 
@@ -29,74 +25,63 @@ export function ConversationPreviewItem({
       destructive: true,
     },
   ]
-  console.log(conversation.isOnline)
 
   return (
     <div
       onClick={onSelect}
-      className={`group flex w-full items-center gap-2 sm:gap-3 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 cursor-pointer transition-colors ${
-        active ? 'bg-accent' : 'hover:bg-secondary'
-      }`}
+      className={`
+        group flex items-center gap-3
+        px-3 py-2.5
+        rounded-xl
+        cursor-pointer
+        transition-all
+
+        ${active ? 'bg-muted shadow-sm' : 'hover:bg-muted/60'}
+        active:scale-[0.99]
+      `}
     >
-      {/* Avatar */}
+      {/* AVATAR */}
       <div className="relative shrink-0">
         <div
           className="
             flex items-center justify-center
-            size-10 sm:size-11
+            h-10 w-10
             rounded-xl
-            bg-primary text-primary-foreground
+            bg-primary/10 text-primary
           "
         >
-          <Users className="size-4" />
+          <Users className="h-4 w-4" />
         </div>
 
         {conversation.isOnline && (
           <span
             className="
               absolute bottom-0 right-0
-              size-2.5 sm:size-3
+              h-2.5 w-2.5
               rounded-full
-              border-2 border-card
+              border-2 border-background
               bg-emerald-500
+              animate-pulse
             "
           />
         )}
       </div>
 
-      {/* Info */}
-      <div className="min-w-0 flex-1 overflow-hidden">
+      {/* INFO */}
+      <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
-          <span
-            className="
-              truncate
-              text-sm font-medium
-              text-card-foreground
-            "
-          >
-            {conversation.username}
-          </span>
+          <span className="truncate text-sm font-medium">{conversation.username}</span>
         </div>
 
-        <p
-          className="
-            truncate
-            text-[11px] sm:text-xs
-            text-muted-foreground
-          "
-        >
-          Sin mensajes aún
-        </p>
+        <p className="truncate text-xs text-muted-foreground">Sin mensajes aún</p>
       </div>
 
-      {/* Dropdown */}
+      {/* ACTIONS */}
       <div
         onClick={e => e.stopPropagation()}
         className="
-          shrink-0
-          opacity-100 sm:opacity-0
-          transition-opacity
-          sm:group-hover:opacity-100
+          opacity-0 group-hover:opacity-100
+          transition
         "
       >
         <DropdownGeneric
@@ -106,13 +91,14 @@ export function ConversationPreviewItem({
             <button
               className="
                 flex items-center justify-center
-                size-8
+                h-8 w-8
                 rounded-lg
-                transition-colors
-                hover:bg-secondary
+                hover:bg-muted
+                transition
+                active:scale-95
               "
             >
-              <MoreVertical className="size-4" />
+              <MoreVertical className="h-4 w-4" />
             </button>
           }
           items={items}
