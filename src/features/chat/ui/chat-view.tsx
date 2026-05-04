@@ -147,7 +147,7 @@ export function ChatView({ conversation }: ChatViewProps) {
         <div className="fixed inset-0 z-40" onClick={() => setOpenAttachMenu(false)} />
       )}
 
-      {/* ATTACH MENU (más limpio + compacto) */}
+      {/* ATTACH MENU  */}
       {openAttachMenu && (
         <div
           className="fixed z-50 w-52 rounded-xl border bg-background shadow-lg overflow-hidden"
@@ -191,7 +191,7 @@ export function ChatView({ conversation }: ChatViewProps) {
         </div>
       )}
 
-      {/* INPUT BAR (más tipo WhatsApp real) */}
+      {/* INPUT BAR */}
       <footer className="border-t bg-background/80 backdrop-blur-md px-2 py-2 sm:px-3">
         <div className="flex items-end gap-2">
           {/* ATTACH */}

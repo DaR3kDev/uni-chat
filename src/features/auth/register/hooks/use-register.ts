@@ -4,8 +4,11 @@ import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { AxiosError } from 'axios'
 import { toast } from 'sonner'
+
 import type { AuthTokenResponse } from '@/entities/auth/types/auth.types'
+
 import { authStorage } from '@/entities/auth/model/storage/auth-storage'
+import { useAuthStore } from '@/entities/auth/model/store/auth.store'
 
 export function useRegister() {
   const navigate = useNavigate()
@@ -25,11 +28,16 @@ export function useRegister() {
 
         authStorage.setUser(user)
 
-        toast.success('Cuenta creada correctamente')
-        navigate({ to: '/chat' })
+        useAuthStore.getState().setUser(user)
       } catch (error) {
-        toast.error('No se pudo cargar el usuario')
+        toast.error('Error cargando perfil', {
+          description: (error as Error).message,
+        })
       }
+
+      toast.success('Cuenta creada correctamente')
+
+      await navigate({ to: '/chat' })
     },
 
     onError: error => {

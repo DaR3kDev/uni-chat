@@ -1,12 +1,12 @@
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
-import { useAuthStore } from '@/entities/auth/model/store/auth.store'
 import { AuthLayout } from '@/app/layout/auth-layout'
+import { authStorage } from '@/entities/auth/model/storage/auth-storage'
 
 export const Route = createFileRoute('/(auth)')({
   beforeLoad: () => {
-    const { isAuthenticated } = useAuthStore.getState()
+    const token = authStorage.getToken()
 
-    if (isAuthenticated) {
+    if (token) {
       throw redirect({
         to: '/chat',
         replace: true,

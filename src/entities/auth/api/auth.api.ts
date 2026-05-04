@@ -13,6 +13,7 @@ export const register = async (payload: { username: string; phone: string; email
 
 export const getMe = async () => {
   const { data } = await http.get<MeResponse>('auth/me')
+  console.log(data)
   return data
 }
 

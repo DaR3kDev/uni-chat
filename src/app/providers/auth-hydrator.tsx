@@ -14,6 +14,7 @@ export function AuthHydrator() {
 
     if (!token) {
       clear()
+      setLoading(false)
       return
     }
 
