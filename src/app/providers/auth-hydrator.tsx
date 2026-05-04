@@ -10,15 +10,15 @@ export function AuthHydrator() {
   const setLoading = useAuthStore(s => s.setLoading)
 
   useEffect(() => {
-    const token = authStorage.getToken()
-
-    if (!token) {
-      clear()
-      setLoading(false)
-      return
-    }
-
     const hydrate = async () => {
+      const token = authStorage.getToken()
+
+      if (!token) {
+        clear()
+        setLoading(false)
+        return
+      }
+
       try {
         const user = await getMe()
 
