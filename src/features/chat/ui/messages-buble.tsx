@@ -55,7 +55,7 @@ export function MessageBubble({ message, isMine }: MessageBubbleProps) {
     VIDEO: msg => (
       <video
         controls
-        src={msg.fileUrl}
+        src={msg.fileUrl || ''}
         className="rounded-xl w-full max-w-[220px] sm:max-w-[300px]"
       />
     ),
@@ -64,7 +64,7 @@ export function MessageBubble({ message, isMine }: MessageBubbleProps) {
 
     FILE: msg => (
       <a
-        href={msg.fileUrl}
+        href={msg.fileUrl || ''}
         target="_blank"
         rel="noreferrer"
         className="text-[13px] sm:text-sm underline break-all opacity-90 hover:opacity-100"

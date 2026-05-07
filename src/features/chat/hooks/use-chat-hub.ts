@@ -74,7 +74,7 @@ export function useChatHub({
         ReceiveTextMessage: handlersRef.current.onReceiveTextMessage,
         ReceiveFileMessage: handlersRef.current.onReceiveFileMessage,
         UserTyping: handlersRef.current.onTyping,
-        UserJoined: handlersRef.current.onJoinedConversation,
+        JoinedConversation: handlersRef.current.onJoinedConversation,
         MessageDelivered: handlersRef.current.onMessageDelivered,
         MessageRead: handlersRef.current.onMessageRead,
       },

@@ -16,7 +16,7 @@ const sizeMap = {
 }
 
 function formatTime(sec: number) {
-  if (!sec) return '0:00'
+  if (!sec || Number.isNaN(sec)) return '0:00'
   const m = Math.floor(sec / 60)
   const s = Math.floor(sec % 60)
   return `${m}:${s < 10 ? '0' : ''}${s}`
@@ -32,18 +32,26 @@ export function VoiceNoteMessage({ url, isMine, size = 'x1_5' }: VoiceNoteMessag
   const cfg = sizeMap[size]
   const percent = duration ? (progress / duration) * 100 : 0
 
+  const safeUrl = url?.trim()
+
   const toggle = async () => {
     const audio = audioRef.current
     if (!audio) return
 
-    if (audio.paused) {
-      await audio.play()
-      setPlaying(true)
-    } else {
-      audio.pause()
-      setPlaying(false)
+    try {
+      if (audio.paused) {
+        await audio.play()
+        setPlaying(true)
+      } else {
+        audio.pause()
+        setPlaying(false)
+      }
+    } catch (err) {
+      console.error('Audio play error:', err)
     }
   }
+
+  if (!safeUrl) return null
 
   return (
     <div
@@ -105,10 +113,9 @@ export function VoiceNoteMessage({ url, isMine, size = 'x1_5' }: VoiceNoteMessag
         </div>
       </div>
 
-      {/* AUDIO */}
       <audio
         ref={audioRef}
-        src={url}
+        src={safeUrl}
         preload="metadata"
         onTimeUpdate={() => setProgress(audioRef.current?.currentTime || 0)}
         onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)}

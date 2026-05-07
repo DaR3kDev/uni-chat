@@ -10,7 +10,7 @@ export interface ChatHubEvents {
   ReceiveTextMessage: Message
   ReceiveFileMessage: Message
   UserTyping: TypingData
-  UserJoined: JoinedConversationEvent
+  JoinedConversation: JoinedConversationEvent
   MessageDelivered: MessageDeliveredEvent
   MessageRead: MessageReadEvent
 }

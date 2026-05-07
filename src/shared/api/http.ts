@@ -12,7 +12,9 @@ export const http = axios.create({
 http.interceptors.request.use(config => {
   const token = authStorage.getToken()
 
-  if (token) {
+  const isRefreshRequest = config.url?.includes('auth/refresh')
+
+  if (token && !isRefreshRequest) {
     config.headers = config.headers ?? {}
     config.headers['Authorization'] = `Bearer ${token}`
   }
@@ -21,17 +23,23 @@ http.interceptors.request.use(config => {
 })
 
 http.interceptors.response.use(
-  res => res,
+  response => response,
   async error => {
     const originalRequest = error.config
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const isRefreshRequest =
+      originalRequest?.url?.includes('/auth/refresh') ||
+      originalRequest?.url?.includes('auth/refresh')
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isRefreshRequest) {
       originalRequest._retry = true
 
       try {
-        const { data } = await http.post('/auth/refresh')
+        const { data } = await http.post('auth/refresh')
 
         authStorage.setToken(data.accessToken)
+
+        originalRequest.headers = originalRequest.headers ?? {}
 
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`
 

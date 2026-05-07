@@ -12,6 +12,7 @@ interface ChatHubEventsParams {
 
 export function registerChatHubEvents({ connection, handlers }: ChatHubEventsParams) {
   const handleReceiveMessage = (data: any) => {
+    console.log('Received message:', data)
     if (data.type === 'TEXT') {
       handlers.ReceiveTextMessage?.(data)
     } else {
@@ -21,7 +22,7 @@ export function registerChatHubEvents({ connection, handlers }: ChatHubEventsPar
 
   connection.off('ReceiveMessage')
   connection.off('UserTyping')
-  connection.off('UserJoined')
+  connection.off('JoinedConversation')
   connection.off('MessageDelivered')
   connection.off('MessageRead')
 
@@ -29,7 +30,7 @@ export function registerChatHubEvents({ connection, handlers }: ChatHubEventsPar
 
   if (handlers.UserTyping) connection.on('UserTyping', handlers.UserTyping)
 
-  if (handlers.UserJoined) connection.on('UserJoined', handlers.UserJoined)
+  if (handlers.JoinedConversation) connection.on('JoinedConversation', handlers.JoinedConversation)
 
   if (handlers.MessageDelivered) connection.on('MessageDelivered', handlers.MessageDelivered)
 
