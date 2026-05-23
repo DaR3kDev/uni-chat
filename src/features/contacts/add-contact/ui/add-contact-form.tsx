@@ -9,7 +9,6 @@ import { Label } from '@/shared/ui/label'
 
 import { contactSchema, type ContactSchema } from '../schemas/contact.schema'
 import { useCreateContact } from '../hooks/use-create-contact'
-import { queryClient } from '@/shared/lib/query-client'
 
 type AddContactFormProps = {
   onSuccess?: () => void
