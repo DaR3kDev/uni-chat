@@ -28,5 +28,5 @@ dist-ssr
 .env
 
 # tanstack router
-.routeTree.gen.ts
-.tanstack
+routeTree.gen.ts
+.tanstack/

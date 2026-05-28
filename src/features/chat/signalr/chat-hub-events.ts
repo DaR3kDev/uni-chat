@@ -11,28 +11,43 @@ interface ChatHubEventsParams {
 }
 
 export function registerChatHubEvents({ connection, handlers }: ChatHubEventsParams) {
-  const handleReceiveMessage = (data: any) => {
-    console.log('Received message:', data)
-    if (data.type === 'TEXT') {
-      handlers.ReceiveTextMessage?.(data)
-    } else {
-      handlers.ReceiveFileMessage?.(data)
-    }
-  }
-
   connection.off('ReceiveMessage')
   connection.off('UserTyping')
   connection.off('JoinedConversation')
   connection.off('MessageDelivered')
   connection.off('MessageRead')
 
-  connection.on('ReceiveMessage', handleReceiveMessage)
+  connection.on('ReceiveMessage', data => {
+    console.log('ReceiveMessage:', data)
 
-  if (handlers.UserTyping) connection.on('UserTyping', handlers.UserTyping)
+    try {
+      if (data.type === 'TEXT') {
+        handlers.ReceiveTextMessage?.(data)
+      } else {
+        handlers.ReceiveFileMessage?.(data)
+      }
+    } catch (error) {
+      console.error('ReceiveMessage error:', error)
+    }
+  })
 
-  if (handlers.JoinedConversation) connection.on('JoinedConversation', handlers.JoinedConversation)
+  connection.on('UserTyping', data => {
+    console.log('UserTyping:', data)
+    handlers.UserTyping?.(data)
+  })
 
-  if (handlers.MessageDelivered) connection.on('MessageDelivered', handlers.MessageDelivered)
+  connection.on('JoinedConversation', data => {
+    console.log('JoinedConversation:', data)
+    handlers.JoinedConversation?.(data)
+  })
 
-  if (handlers.MessageRead) connection.on('MessageRead', handlers.MessageRead)
+  connection.on('MessageDelivered', data => {
+    console.log('MessageDelivered:', data)
+    handlers.MessageDelivered?.(data)
+  })
+
+  connection.on('MessageRead', data => {
+    console.log('MessageRead:', data)
+    handlers.MessageRead?.(data)
+  })
 }

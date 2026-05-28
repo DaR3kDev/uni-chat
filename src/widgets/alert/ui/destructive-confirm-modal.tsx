@@ -41,7 +41,7 @@ export function DestructiveConfirmModal({
           <AlertDialogTitle className="text-red-600">{title}</AlertDialogTitle>
 
           <AlertDialogDescription className="text-muted-foreground">
-            {description}
+            {description ?? '¿Estás seguro de realizar esta acción?'}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
